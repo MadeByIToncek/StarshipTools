@@ -42,6 +42,7 @@ public class Main {
 		prev.addActionListener(new ButtonEvent());
 		pb = new JProgressBar(0, events.size() + 1);
 		pb.setValue(index + 1);
+		
 		JSlider slider = new JSlider(JSlider.HORIZONTAL);
 		slider.setMaximum(100);
 		slider.setMinimum(0);
@@ -74,12 +75,12 @@ public class Main {
 		t0tweaks.add(t0set);
 		
 		
-		JPanel fin = new JPanel(new GridLayout(5, 1));
+		JPanel fin = new JPanel(new GridLayout(6, 1));
 		fin.add(new Title());
 		fin.add(prevnext);
 		fin.add(abt);
 		fin.add(t0tweaks);
-		//fin.add(slider);
+		fin.add(slider);
 		fin.add(pb);
 		
 		command.add(fin);
@@ -150,11 +151,10 @@ public class Main {
 		ArrayList<CountdownEvent> temp = new ArrayList<>();
 		
 		temp.add(new CountdownEvent("Cesta uzavřena", "Cesta TX4 je uzavřena před OFT-1", null, 95, 0.06f));
-		temp.add(new CountdownEvent("Rampa evakuována", "Veškerý personál opustil blízkost rakety", null, 335, 0.23f));
-		temp.add(new CountdownEvent("Rekondenzátor", "Reknodenzátor byl zapnut", null, 647, 0.39f));
-		temp.add(new CountdownEvent("Oblaky nad farmou", "Farma je nastartována, za chvíli začne tankování", null, 879, 0.54f));
-		temp.add(new CountdownEvent("Tankování", "Raketa se plní tekutým metanem a tekutým kyslíkem", null, 1167, 0.66f));
-		temp.add(new CountdownEvent("Chlazení motorů", "Raketa začne posílat do motorů kyslík aby ho připravila na chladné plyny.", null, 1332, 0.79f));
+		temp.add(new CountdownEvent("Rampa evakuována", "Veškerý personál opustil blízkost rakety", null, 400, 0.27f));
+		temp.add(new CountdownEvent("Rekondenzátor", "Reknodenzátor byl zapnut", null, 740, 0.43f));
+		temp.add(new CountdownEvent("Tankování", "Raketa se plní tekutým metanem a tekutým kyslíkem", null, 1060, 0.60f));
+		temp.add(new CountdownEvent("Chlazení motorů", "Raketa začne posílat do motorů kyslík aby ho připravila na chladné plyny.", null, 1300, 0.77f));
 		temp.add(new CountdownEvent("Zážeh!", "Motory byly zažehnuty", null, 1593, 0.89f));
 		temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 1717, 0.97f));
 		
