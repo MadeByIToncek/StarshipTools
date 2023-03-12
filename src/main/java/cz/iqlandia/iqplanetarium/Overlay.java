@@ -50,7 +50,7 @@ class Overlay extends JPanel {
 		//Rectangles
 		g.setColor(iqPrimary);
 		//T0
-		g.fillRect(1555, 202, 306, 58);
+		g.fillRect(1555, 138, 306, 54);
 		//Name
 		g.fillRect(76, 855, 400, 55);
 		//Bar
@@ -59,19 +59,41 @@ class Overlay extends JPanel {
 		drawDashedSquare(g, 76, 47, 501, 286);
 		//GO/ABORT/HOLD/RUD info
 		if(state != State.NOMINAL) {
-			g.fillRect(state.getBase(), 262, state.getWidth(), 57);
+			g.fillRect(state.getBase(), 194, state.getWidth(), 57);
 		}
 		
 		
 		// ====================  Texts  ====================
-		//Time
+		//Setting up font metrics
+		FontMetrics fm;
+		int width;
+		//T0
 		g.setColor(Color.WHITE);
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(47F));
+		fm = getFontMetrics(g.getFont());
 		String tim = locktime;
 		if(state == State.GO || state == State.NOMINAL) {
 			tim = getT0();
 		}
-		g.drawString(tim, 1565, 245);
+		width = fm.stringWidth(tim);
+		g.drawString(tim, 1855 - width, 181);
+		
+		//Time
+		
+		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(40F));
+		fm = getFontMetrics(g.getFont());
+		LocalTime bocatime = LocalTime.now().atOffset(ZoneOffset.ofHours(-5)).toLocalTime();
+		LocalTime turtime = LocalTime.now();
+		
+		String times = String.format("%02d:%02d:%02d TX // %02d:%02d:%02d CZ", bocatime.getHour(), bocatime.getMinute(), bocatime.getSecond(), turtime.getHour(), turtime.getMinute(), turtime.getSecond());
+		width = fm.stringWidth(times);
+		
+		// --> DRAWING TIME BOX HERE <--
+		g.setColor(iqPrimary);
+		g.fillRect(1851 - width, 78, width + 10, 58);
+		g.setColor(Color.WHITE);
+		
+		g.drawString(times, 1862 - width, 123);
 		
 		// Starship OFT - 1
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(44F));
@@ -80,7 +102,7 @@ class Overlay extends JPanel {
 		//State
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(48F));
 		if(state != State.NOMINAL) {
-			g.drawString(state.name(), state.getTxpos(), 309);
+			g.drawString(state.name(), state.getTxpos(), 242);
 		}
 		
 		//Bar
