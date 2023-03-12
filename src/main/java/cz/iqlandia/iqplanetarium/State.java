@@ -16,7 +16,7 @@ import java.awt.*;
 public enum State {
 	NOMINAL(new Color(0, 163, 224), 0, 0, 0),
 	GO(new Color(4, 173, 4), 1764, 97, 1775),
-	HOLD(new Color(255, 145, 0), 1715, 146, 1722),
+	HOLD(new Color(204, 109, 1), 1715, 146, 1722),
 	ABORT(new Color(175, 20, 0), 1676, 185, 1686),
 	RUD(new Color(92, 103, 107), 1748, 113, 1755);
 	
