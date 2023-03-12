@@ -1,0 +1,154 @@
+package cz.iqlandia.iqplanetarium;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.net.*;
+import java.time.*;
+import java.util.List;
+import java.util.Timer;
+import java.util.*;
+
+public class Main {
+	public static JFrame overlay = new JFrame("Starship Overlay | StarshipTools.jar");
+	public static JFrame command = new JFrame("Command | StarshipTools.jar");
+	public static List<CountdownEvent> events = calcEvents();
+	public static int index = 0;
+	public static Instant t0 = LocalDateTime.of(2023, 3, 12, 14, 30, 0).toInstant(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.of(2023, 3, 12, 14, 30, 0)));
+	public static JProgressBar pb;
+	public static Overlay ovr = new Overlay();
+	
+	public static void main(String[] args) {
+		// ----------------------------------------- COMMAND WINDOW LOADING -------------------------------------------------
+		JButton next = new JButton();
+		next.setText("Next event");
+		next.setActionCommand("true");
+		next.addActionListener(new ButtonEvent());
+		JButton prev = new JButton();
+		prev.setText("Previous event");
+		prev.setActionCommand("false");
+		prev.addActionListener(new ButtonEvent());
+		pb = new JProgressBar(0, events.size() + 1);
+		pb.setValue(index + 1);
+		JSlider slider = new JSlider(JSlider.HORIZONTAL);
+		slider.setMaximum(100);
+		slider.setMinimum(0);
+		slider.addChangeListener(e -> {
+			ovr.targetlenght = slider.getValue() / 100f;
+			System.out.println(slider.getValue() / 100f);
+		});
+		
+		JPanel prevnext = new JPanel(new GridLayout(1, 2));
+		prevnext.add(prev);
+		prevnext.add(next);
+		
+		JPanel abt = new JPanel(new GridLayout(1, State.values().length));
+		for (State value : State.values()) {
+			JButton state = new JButton();
+			state.setText(value.name());
+			state.setActionCommand(value.name());
+			state.addActionListener(new ButtonState());
+			state.setBackground(value.getColor());
+			if(value == State.RUD) {
+				state.setForeground(Color.WHITE);
+			}
+			abt.add(state);
+		}
+		
+		JPanel t0tweaks = new JPanel(new GridLayout(1, 1));
+		JButton t0set = new JButton();
+		t0set.setText("Set T0");
+		t0set.addActionListener(new ButtonT0());
+		t0tweaks.add(t0set);
+		
+		
+		JPanel fin = new JPanel(new GridLayout(5, 1));
+		fin.add(new Title());
+		fin.add(prevnext);
+		fin.add(abt);
+		fin.add(t0tweaks);
+		//fin.add(slider);
+		fin.add(pb);
+		
+		command.add(fin);
+		Dimension dim = new Dimension(400, 300);
+		command.setSize(dim);
+		command.setMaximumSize(dim);
+		command.setMaximumSize(dim);
+		command.setLocation(-1800, 142);
+		command.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent windowEvent) {
+				overlay.setVisible(false);
+				command.setVisible(false);
+				System.exit(0);
+			}
+		});
+		command.setVisible(true);
+		
+		// ----------------------------------------- OVERLAY WINDOW LOADING -------------------------------------------------
+		
+		overlay.add(ovr);
+		Dimension fullhd = new Dimension(1920, 1080 + 37);
+		overlay.setSize(fullhd);
+		overlay.setMinimumSize(fullhd);
+		overlay.setMaximumSize(fullhd);
+		overlay.setResizable(false);
+		overlay.setLocation(-3830, 50);
+		overlay.setVisible(true);
+		
+		// ----------------------------------------- THREAD SETUP ----------------------------------------------------------
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				overlay.repaint();
+			}
+		}, 40, 40);
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(timer::cancel));
+	}
+	
+	public static Font font(FontFamily family, FontVariant variant) {
+		if(!new File("./fonts/").exists()) {
+			new File("./fonts/").mkdirs();
+		}
+		
+		if(!new File("./fonts/" + family.getFolder()).exists()) {
+			new File("./fonts/" + family.getFolder()).mkdirs();
+		}
+		
+		if(!new File("./fonts/" + family.getFolder() + "/" + variant.getFilename() + family.getSuffix()).exists()) {
+			try (FileOutputStream fos = new FileOutputStream("./fonts/" + family.getFolder() + "/" + variant.getFilename() + family.getSuffix());
+					InputStream stream = new URL(family.getPrefix() + variant.getVariant() + family.getSuffix()).openStream()) {
+				stream.transferTo(fos);
+				return Font.createFont(0, new File("./fonts/" + family.getFolder() + "/" + variant.getFilename() + family.getSuffix()));
+			} catch (IOException | FontFormatException e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			try {
+				return Font.createFont(0, new File("./fonts/" + family.getFolder() + "/" + variant.getFilename() + family.getSuffix()));
+			} catch (FontFormatException | IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+	
+	public static ArrayList<CountdownEvent> calcEvents() {
+		ArrayList<CountdownEvent> temp = new ArrayList<>();
+		
+		temp.add(new CountdownEvent("Cesta uzavřena", "Cesta TX4 je uzavřena před OFT-1", null, 95, 0.06f));
+		temp.add(new CountdownEvent("Rampa evakuována", "Veškerý personál opustil blízkost rakety", null, 335, 0.23f));
+		temp.add(new CountdownEvent("Rekondenzátor", "Reknodenzátor byl zapnut", null, 647, 0.39f));
+		temp.add(new CountdownEvent("Oblaky nad farmou", "Farma je nastartována, za chvíli začne tankování", null, 879, 0.54f));
+		temp.add(new CountdownEvent("Tankování", "Raketa se plní tekutým metanem a tekutým kyslíkem", null, 1167, 0.66f));
+		temp.add(new CountdownEvent("Chlazení motorů", "Raketa začne posílat do motorů kyslík aby ho připravila na chladné plyny.", null, 1332, 0.79f));
+		temp.add(new CountdownEvent("Zážeh!", "Motory byly zažehnuty", null, 1593, 0.89f));
+		temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 1717, 0.97f));
+		
+		return temp;
+	}
+	
+}
+
