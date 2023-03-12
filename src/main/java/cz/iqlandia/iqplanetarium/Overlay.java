@@ -44,33 +44,46 @@ class Overlay extends JPanel {
 	
 	@Override
 	public void paint(Graphics g) {
-		//Background
+		// ====================  Background  ====================
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, 1920, 1080);
 		//Rectangles
 		g.setColor(iqPrimary);
+		//T0
 		g.fillRect(1555, 202, 306, 58);
+		//Name
 		g.fillRect(76, 855, 400, 55);
+		//Bar
 		g.fillRect(76, 913, 1768, 127);
+		//Camera
 		drawDashedSquare(g, 76, 47, 501, 286);
+		//GO/ABORT/HOLD/RUD info
 		if(state != State.NOMINAL) {
 			g.fillRect(state.getBase(), 262, state.getWidth(), 57);
 		}
-		//Texts
+		
+		
+		// ====================  Texts  ====================
+		//Time
 		g.setColor(Color.WHITE);
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(47F));
 		String tim = locktime;
 		if(state == State.GO || state == State.NOMINAL) {
 			tim = getT0();
 		}
-		g.drawChars(tim.toCharArray(), 0, tim.toCharArray().length, 1565, 245);
+		g.drawString(tim, 1565, 245);
+		
+		// Starship OFT - 1
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(44F));
-		String title = "Starship OFT - 1";
-		g.drawChars(title.toCharArray(), 0, title.toCharArray().length, 94, 895);
+		g.drawString("Starship OFT - 1", 94, 895);
+		
+		//State
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(48F));
 		if(state != State.NOMINAL) {
-			g.drawChars(state.name().toCharArray(), 0, state.name().toCharArray().length, state.getTxpos(), 309);
+			g.drawString(state.name(), state.getTxpos(), 309);
 		}
+		
+		//Bar
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(28F));
 		for (CountdownEvent event : events) {
 			if(event.ratio() > barlenght) {
@@ -87,7 +100,7 @@ class Overlay extends JPanel {
 			}
 		}
 		
-		//Progressbar
+		// ====================  Progressbar  ====================
 		g.setColor(new Color(58, 65, 68));
 		g.fillRect(95, 963, 1730, 8);
 		g.setColor(iqSecondary);
@@ -98,7 +111,7 @@ class Overlay extends JPanel {
 		}
 		
 		g.fillRect(96, 964, Math.round(barlenght * maxlenght), 6);
-		//Rendering
+		// ====================  Rendering  ====================
 		g.dispose();
 	}
 	
