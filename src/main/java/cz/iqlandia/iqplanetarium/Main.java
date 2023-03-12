@@ -119,6 +119,11 @@ public class Main {
 		}, 40, 40);
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(timer::cancel));
+		
+		CountdownEvent ev = events.get(0);
+		events.set(0, new CountdownEvent(ev.name(), ev.description(), LocalTime.now(), ev.x(), ev.ratio()));
+		pb.setValue(Main.index + 1);
+		ovr.targetlenght = Main.events.get(Main.index).ratio();
 	}
 	
 	public static Font font(FontFamily family, FontVariant variant) {
