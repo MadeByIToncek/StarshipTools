@@ -9,12 +9,15 @@
  * author on their public email address.
  */
 
-package cz.iqlandia.iqplanetarium;
+package cz.iqlandia.iqplanetarium.graphics;
+
+import cz.iqlandia.iqplanetarium.*;
+import cz.iqlandia.iqplanetarium.fonts.*;
 
 import javax.swing.*;
 import java.awt.*;
 
-class Title extends JPanel {
+public class Title extends JPanel {
 	@Override
 	public void paint(Graphics g) {
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.MEDIUM).deriveFont(20.0F));

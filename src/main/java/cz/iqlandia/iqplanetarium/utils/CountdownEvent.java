@@ -9,29 +9,11 @@
  * author on their public email address.
  */
 
-package cz.iqlandia.iqplanetarium;
+package cz.iqlandia.iqplanetarium.utils;
 
-public enum FontVariant {
-	THIN("Thin", "thin"),
-	LIGHT("Light", "light"),
-	BOOK("Book", "book"),
-	REGULAR("Regular", "regular"),
-	MEDIUM("Medium", "medium"),
-	BOLD("Bold", "bold");
-	
-	private final String variant;
-	private final String filename;
-	
-	FontVariant(String variant, String filename) {
-		this.variant = variant;
-		this.filename = filename;
-	}
-	
-	public String getVariant() {
-		return variant;
-	}
-	
-	public String getFilename() {
-		return filename;
-	}
+import org.jetbrains.annotations.*;
+
+import java.time.*;
+
+public record CountdownEvent(String name, String description, @Nullable LocalTime time, int x, float ratio) {
 }

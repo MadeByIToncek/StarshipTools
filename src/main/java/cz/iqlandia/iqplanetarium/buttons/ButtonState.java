@@ -9,22 +9,26 @@
  * author on their public email address.
  */
 
-package cz.iqlandia.iqplanetarium;
+package cz.iqlandia.iqplanetarium.buttons;
+
+import cz.iqlandia.iqplanetarium.*;
+import cz.iqlandia.iqplanetarium.graphics.*;
+import cz.iqlandia.iqplanetarium.utils.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.text.*;
 import java.util.*;
 
-@SuppressWarnings("ALL")
+public
 class ButtonState implements ActionListener {
 	
 	public static Color blend(Color color1, Color color2, double ratio) {
 		float r = (float) ratio;
 		float ir = (float) 1.0 - r;
 		
-		float rgb1[] = new float[3];
-		float rgb2[] = new float[3];
+		float[] rgb1 = new float[3];
+		float[] rgb2 = new float[3];
 		
 		color1.getColorComponents(rgb1);
 		color2.getColorComponents(rgb2);
@@ -65,10 +69,11 @@ class ButtonState implements ActionListener {
 		State prev = Main.ovr.state;
 		State state = State.valueOf(e.getActionCommand());
 		Main.ovr.state = state;
-		if((state != State.NOMINAL) || (state != State.GO)) {
+		if(state != State.NOMINAL) {
+			Main.ovr.locktime = Overlay.getT0();
+		} else if(state != State.GO) {
 			Main.ovr.locktime = Overlay.getT0();
 		}
-		;
 		float max = 25;
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {

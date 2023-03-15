@@ -9,12 +9,15 @@
  * author on their public email address.
  */
 
-package cz.iqlandia.iqplanetarium;
+package cz.iqlandia.iqplanetarium.buttons;
+
+import cz.iqlandia.iqplanetarium.*;
+import cz.iqlandia.iqplanetarium.utils.*;
 
 import java.awt.event.*;
 import java.time.*;
 
-class ButtonEvent implements ActionListener {
+public class ButtonEvent implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {

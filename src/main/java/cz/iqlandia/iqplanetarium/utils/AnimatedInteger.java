@@ -9,30 +9,27 @@
  * author on their public email address.
  */
 
-package cz.iqlandia.iqplanetarium;
+package cz.iqlandia.iqplanetarium.utils;
 
-public enum FontFamily {
-	STOLZL("https://github.com/MadeByIToncek/cdn.itoncek.cf/raw/main/fonts/Stolzl-", ".ttf", "stolzl");
+public class AnimatedInteger {
 	
-	private final String prefix;
-	private final String suffix;
-	private final String folder;
+	private double current;
+	private double target;
 	
-	FontFamily(String prefix, String suffix, String folder) {
-		this.prefix = prefix;
-		this.suffix = suffix;
-		this.folder = folder;
+	public AnimatedInteger(double def) {
+		this.current = def;
 	}
 	
-	public String getPrefix() {
-		return prefix;
+	public void setTarget(double target) {
+		this.target = target;
 	}
 	
-	public String getSuffix() {
-		return suffix;
-	}
-	
-	public String getFolder() {
-		return folder;
+	public double step() {
+		if(target > current) {
+			current = ((target - current) / 5d) + current;
+		} else {
+			current = current - ((target - current) / 5d);
+		}
+		return current;
 	}
 }

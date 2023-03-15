@@ -11,6 +11,11 @@
 
 package cz.iqlandia.iqplanetarium;
 
+import cz.iqlandia.iqplanetarium.buttons.*;
+import cz.iqlandia.iqplanetarium.fonts.*;
+import cz.iqlandia.iqplanetarium.graphics.*;
+import cz.iqlandia.iqplanetarium.utils.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -30,7 +35,7 @@ public class Main {
 	public static JProgressBar pb;
 	public static Overlay ovr = new Overlay();
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws URISyntaxException {
 		// ----------------------------------------- COMMAND WINDOW LOADING -------------------------------------------------
 		JButton next = new JButton();
 		next.setText("Next event");
@@ -75,12 +80,12 @@ public class Main {
 		t0tweaks.add(t0set);
 		
 		
-		JPanel fin = new JPanel(new GridLayout(6, 1));
+		JPanel fin = new JPanel(new GridLayout(5, 1));
 		fin.add(new Title());
 		fin.add(prevnext);
 		fin.add(abt);
 		fin.add(t0tweaks);
-		fin.add(slider);
+//		fin.add(slider);
 		fin.add(pb);
 		
 		command.add(fin);

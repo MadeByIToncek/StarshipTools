@@ -9,7 +9,7 @@
  * author on their public email address.
  */
 
-package cz.iqlandia.iqplanetarium;
+package cz.iqlandia.iqplanetarium.utils;
 
 import java.awt.*;
 

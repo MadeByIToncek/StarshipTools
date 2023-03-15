@@ -9,7 +9,11 @@
  * author on their public email address.
  */
 
-package cz.iqlandia.iqplanetarium;
+package cz.iqlandia.iqplanetarium.graphics;
+
+import cz.iqlandia.iqplanetarium.*;
+import cz.iqlandia.iqplanetarium.fonts.*;
+import cz.iqlandia.iqplanetarium.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,14 +21,14 @@ import java.time.*;
 
 import static cz.iqlandia.iqplanetarium.Main.*;
 
-class Overlay extends JPanel {
+public class Overlay extends JPanel {
 	public State state = State.NOMINAL;
-	Color iqPrimary = new Color(0, 163, 224);
+	public Color iqPrimary = new Color(0, 163, 224);
 	Color iqSecondary = new Color(203, 239, 255);
 	float barlenght = 0f;
-	float targetlenght = 0f;
+	public float targetlenght = 0f;
 	int maxlenght = 1728;
-	String locktime = "";
+	public String locktime = "";
 	
 	public static String getT0() {
 		Instant now = Instant.now();
@@ -49,8 +53,6 @@ class Overlay extends JPanel {
 		g.fillRect(0, 0, 1920, 1080);
 		//Rectangles
 		g.setColor(iqPrimary);
-		//T0
-		g.fillRect(1555, 138, 306, 54);
 		//Name
 		g.fillRect(76, 855, 400, 55);
 		//Bar
@@ -76,6 +78,15 @@ class Overlay extends JPanel {
 			tim = getT0();
 		}
 		width = fm.stringWidth(tim);
+		
+		
+		//T0
+//		g.fillRect(1555, 138, 306, 54);
+		// --> DRAWING TIME BOX HERE <--
+		g.setColor(iqPrimary);
+		g.fillRect(1851 - width, 138, width + 10, 54);
+		g.setColor(Color.WHITE);
+		
 		g.drawString(tim, 1855 - width, 181);
 		
 		//Time
@@ -93,7 +104,7 @@ class Overlay extends JPanel {
 		g.fillRect(1851 - width, 78, width + 10, 58);
 		g.setColor(Color.WHITE);
 		
-		g.drawString(times, 1862 - width, 123);
+		g.drawString(times, 1860 - width, 123);
 		
 		// Starship OFT - 1
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(44F));
@@ -118,7 +129,7 @@ class Overlay extends JPanel {
 			g.drawChars(event.name().toCharArray(), 0, event.name().toCharArray().length, event.x(), 1015);
 			if(event.time() != null) {
 				g.setColor(Color.WHITE);
-				g.drawString(event.time().getHour() + ":" + event.time().getMinute(), (int) (event.ratio() * maxlenght) + 60, 948);
+				g.drawString(String.format("%02d:%02d", event.time().getHour(), event.time().getMinute()), (int) (event.ratio() * maxlenght) + 60, 948);
 			}
 		}
 		
