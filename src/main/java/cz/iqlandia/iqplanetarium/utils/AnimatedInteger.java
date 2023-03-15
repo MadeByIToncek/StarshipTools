@@ -14,21 +14,31 @@ package cz.iqlandia.iqplanetarium.utils;
 public class AnimatedInteger {
 	
 	private double current;
+	private final double force;
 	private double target;
 	
-	public AnimatedInteger(double def) {
+	public AnimatedInteger(double def, double force) {
 		this.current = def;
+		this.force = force;
 	}
 	
 	public void setTarget(double target) {
 		this.target = target;
 	}
 	
+	public double getCurrent() {
+		return current;
+	}
+	
+	public void setCurrent(double i) {
+		current = i;
+	}
+	
 	public double step() {
-		if(target > current) {
-			current = ((target - current) / 5d) + current;
+		if(Math.abs(target - current) < 0.0005) {
+			current = target;
 		} else {
-			current = current - ((target - current) / 5d);
+			current = ((target - current) / force) + current;
 		}
 		return current;
 	}

@@ -25,8 +25,7 @@ public class Overlay extends JPanel {
 	public State state = State.NOMINAL;
 	public Color iqPrimary = new Color(0, 163, 224);
 	Color iqSecondary = new Color(203, 239, 255);
-	float barlenght = 0f;
-	public float targetlenght = 0f;
+	public AnimatedInteger bar = new AnimatedInteger(0, 5F);
 	int maxlenght = 1728;
 	public String locktime = "";
 	
@@ -51,6 +50,8 @@ public class Overlay extends JPanel {
 		// ====================  Background  ====================
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, 1920, 1080);
+		
+		
 		//Rectangles
 		g.setColor(iqPrimary);
 		//Name
@@ -118,10 +119,10 @@ public class Overlay extends JPanel {
 		
 		//Bar
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(28F));
-		for (CountdownEvent event : events) {
-			if(event.ratio() > barlenght) {
+		for (CountdownEvent event : getCurrent()) {
+			if(event.ratio() > bar.getCurrent()) {
 				g.setColor(new Color(58, 65, 68));
-			} else if(event.ratio() == barlenght) {
+			} else if(event.ratio() == bar.getCurrent()) {
 				g.setColor(Color.WHITE);
 			} else {
 				g.setColor(new Color(175, 222, 246));
@@ -137,13 +138,13 @@ public class Overlay extends JPanel {
 		g.setColor(new Color(58, 65, 68));
 		g.fillRect(95, 963, 1730, 8);
 		g.setColor(iqSecondary);
-		if(targetlenght - barlenght > 0.0005) {
-			barlenght = ((targetlenght - barlenght) / 5) + barlenght;
-		} else {
-			barlenght = targetlenght;
-		}
+//		if(targetlenght - barlenght > 0.0005) {
+//			barlenght = ((targetlenght - barlenght) / 5) + barlenght;
+//		} else {
+//			barlenght = targetlenght;
+//		}
 		
-		g.fillRect(96, 964, Math.round(barlenght * maxlenght), 6);
+		g.fillRect(96, 964, (int) Math.round(bar.step() * maxlenght), 6);
 		// ====================  Rendering  ====================
 		g.dispose();
 	}

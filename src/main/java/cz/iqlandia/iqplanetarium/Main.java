@@ -29,7 +29,9 @@ import java.util.*;
 public class Main {
 	public static JFrame overlay = new JFrame("Starship Overlay | StarshipTools.jar");
 	public static JFrame command = new JFrame("Command | StarshipTools.jar");
-	public static List<CountdownEvent> events = calcEvents();
+	public static boolean post = false;
+	public static List<CountdownEvent> prelaunch = calcEvents(false);
+	public static List<CountdownEvent> postlaunch = calcEvents(true);
 	public static int index = 0;
 	public static Instant t0 = LocalDateTime.of(2023, 3, 12, 14, 30, 0).toInstant(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.of(2023, 3, 12, 14, 30, 0)));
 	public static JProgressBar pb;
@@ -45,14 +47,14 @@ public class Main {
 		prev.setText("Previous event");
 		prev.setActionCommand("false");
 		prev.addActionListener(new ButtonEvent());
-		pb = new JProgressBar(0, events.size() + 1);
+		pb = new JProgressBar(0, getCurrent().size() + 1);
 		pb.setValue(index + 1);
 		
 		JSlider slider = new JSlider(JSlider.HORIZONTAL);
 		slider.setMaximum(100);
 		slider.setMinimum(0);
 		slider.addChangeListener(e -> {
-			ovr.targetlenght = slider.getValue() / 100f;
+			ovr.bar.setTarget(slider.getValue() / 100f);
 			System.out.println(slider.getValue() / 100f);
 		});
 		
@@ -85,7 +87,7 @@ public class Main {
 		fin.add(prevnext);
 		fin.add(abt);
 		fin.add(t0tweaks);
-//		fin.add(slider);
+		//fin.add(slider);
 		fin.add(pb);
 		
 		command.add(fin);
@@ -125,10 +127,10 @@ public class Main {
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(timer::cancel));
 		
-		CountdownEvent ev = events.get(0);
-		events.set(0, new CountdownEvent(ev.name(), ev.description(), LocalTime.now(), ev.x(), ev.ratio()));
+		CountdownEvent ev = getCurrent().get(0);
+		getCurrent().set(0, new CountdownEvent(ev.name(), ev.description(), LocalTime.now(), ev.x(), ev.ratio()));
 		pb.setValue(Main.index + 1);
-		ovr.targetlenght = Main.events.get(Main.index).ratio();
+		ovr.bar.setTarget(getCurrent().get(index).ratio());
 	}
 	
 	public static Font font(FontFamily family, FontVariant variant) {
@@ -157,17 +159,33 @@ public class Main {
 		}
 	}
 	
-	public static ArrayList<CountdownEvent> calcEvents() {
+	public static List<CountdownEvent> getCurrent() {
+		if(post) {
+			return postlaunch;
+		} else {
+			return prelaunch;
+		}
+	}
+	
+	public static ArrayList<CountdownEvent> calcEvents(boolean post) {
 		ArrayList<CountdownEvent> temp = new ArrayList<>();
-		
-		temp.add(new CountdownEvent("Cesta uzavřena", "Cesta TX4 je uzavřena před OFT-1", null, 95, 0.06f));
-		temp.add(new CountdownEvent("Rampa evakuována", "Veškerý personál opustil blízkost rakety", null, 400, 0.27f));
-		temp.add(new CountdownEvent("Rekondenzátor", "Reknodenzátor byl zapnut", null, 740, 0.43f));
-		temp.add(new CountdownEvent("Tankování", "Raketa se plní tekutým metanem a tekutým kyslíkem", null, 1060, 0.60f));
-		temp.add(new CountdownEvent("Chlazení motorů", "Raketa začne posílat do motorů kyslík aby ho připravila na chladné plyny.", null, 1300, 0.77f));
-		temp.add(new CountdownEvent("Zážeh!", "Motory byly zažehnuty", null, 1593, 0.89f));
-		temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 1717, 0.97f));
-		
+		if(post) {
+			temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 100, 0.03f));
+			temp.add(new CountdownEvent("Pitch over", "Raketa začne gravitační oblouk.", null, 300, 0.16f));
+			temp.add(new CountdownEvent("Max-Q", "Moment nejvyššího aerodynamického namáhání rakety.", null, 550, 0.29f));
+			temp.add(new CountdownEvent("MECO", "B7 vypne svých 33 raptor motorů", null, 700, 0.375f));
+			temp.add(new CountdownEvent("Rozdělení stupňů", "B7 zamíří zpět k pevnině, S24 pokračuje dále na orbitu.", null, 850, 0.51f));
+			temp.add(new CountdownEvent("RapVac start", "Motory S24 byly zažehnuty", null, 1200, 0.7f));
+			temp.add(new CountdownEvent("A co dál?", "A co dále? Nevíme :D", null, 1650, 0.94f));
+		} else {
+			temp.add(new CountdownEvent("Cesta uzavřena", "Cesta TX4 je uzavřena před OFT-1", null, 95, 0.06f));
+			temp.add(new CountdownEvent("Rampa evakuována", "Veškerý personál opustil blízkost rakety", null, 400, 0.27f));
+			temp.add(new CountdownEvent("Rekondenzátor", "Reknodenzátor byl zapnut", null, 740, 0.43f));
+			temp.add(new CountdownEvent("Tankování", "Raketa se plní tekutým metanem a tekutým kyslíkem", null, 1060, 0.60f));
+			temp.add(new CountdownEvent("Chlazení motorů", "Raketa začne posílat do motorů kyslík aby ho připravila na chladné plyny.", null, 1300, 0.77f));
+			temp.add(new CountdownEvent("Zážeh!", "Motory byly zažehnuty", null, 1593, 0.89f));
+			temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 1717, 0.97f));
+		}
 		return temp;
 	}
 	

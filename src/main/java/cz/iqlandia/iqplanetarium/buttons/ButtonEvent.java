@@ -17,24 +17,45 @@ import cz.iqlandia.iqplanetarium.utils.*;
 import java.awt.event.*;
 import java.time.*;
 
+import static cz.iqlandia.iqplanetarium.Main.*;
+
 public class ButtonEvent implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		boolean fwd = Boolean.parseBoolean(e.getActionCommand());
 		if(fwd) {
-			if(Main.index + 1 < Main.events.size()) {
-				Main.index++;
+			if(index + 1 < getCurrent().size()) {
+				index++;
+			} else if(!post) {
+				switchScene();
 			}
 		} else {
-			if(Main.index - 1 >= 0) {
-				Main.index--;
+			if(index - 1 >= 0) {
+				index--;
+			} else if(post) {
+				switchScene();
 			}
 		}
-		Main.pb.setValue(Main.index + 1);
-		Main.ovr.targetlenght = Main.events.get(Main.index).ratio();
-		CountdownEvent ce = Main.events.get(Main.index);
-		Main.events.set(Main.index, new CountdownEvent(ce.name(), ce.description(), LocalTime.now(), ce.x(), ce.ratio()));
-		Main.command.repaint();
+		pb.setValue(index + 1);
+		ovr.bar.setTarget(Main.getCurrent().get(index).ratio());
+		CountdownEvent ce = Main.getCurrent().get(index);
+		if(ce.time() == null) {
+			getCurrent().set(index, new CountdownEvent(ce.name(), ce.description(), LocalTime.now(), ce.x(), ce.ratio()));
+		}
+		command.repaint();
+	}
+	
+	private void switchScene() {
+		post = !post;
+		if(post) {
+			index = 0;
+			ovr.bar.setCurrent(0);
+		} else {
+			index = getCurrent().size() - 1;
+			ovr.bar.setCurrent(1);
+		}
+		CountdownEvent tmp = getCurrent().get(0);
+		getCurrent().set(0, new CountdownEvent(tmp.name(), tmp.description(), LocalTime.now(), tmp.x(), tmp.ratio()));
 	}
 }
