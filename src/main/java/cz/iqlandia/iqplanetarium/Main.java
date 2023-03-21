@@ -12,6 +12,7 @@
 package cz.iqlandia.iqplanetarium;
 
 import cz.iqlandia.iqplanetarium.buttons.*;
+import cz.iqlandia.iqplanetarium.chat.*;
 import cz.iqlandia.iqplanetarium.fonts.*;
 import cz.iqlandia.iqplanetarium.graphics.*;
 import cz.iqlandia.iqplanetarium.utils.*;
@@ -36,6 +37,7 @@ public class Main {
 	public static Instant t0 = LocalDateTime.of(2023, 3, 12, 14, 30, 0).toInstant(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.of(2023, 3, 12, 14, 30, 0)));
 	public static JProgressBar pb;
 	public static Overlay ovr = new Overlay();
+	public static ChatTools tools = null;
 	
 	public static void main(String[] args) throws URISyntaxException {
 		// ----------------------------------------- COMMAND WINDOW LOADING -------------------------------------------------
@@ -49,6 +51,10 @@ public class Main {
 		prev.addActionListener(new ButtonEvent());
 		pb = new JProgressBar(0, getCurrent().size() + 1);
 		pb.setValue(index + 1);
+		
+		JButton toolButton = new JButton();
+		toolButton.setText("Enable YouTube chat");
+		toolButton.addActionListener(new ToolButtonListener());
 		
 		JSlider slider = new JSlider(JSlider.HORIZONTAL);
 		slider.setMaximum(100);
@@ -82,16 +88,17 @@ public class Main {
 		t0tweaks.add(t0set);
 		
 		
-		JPanel fin = new JPanel(new GridLayout(5, 1));
+		JPanel fin = new JPanel(new GridLayout(6, 1));
 		fin.add(new Title());
 		fin.add(prevnext);
+		fin.add(toolButton);
 		fin.add(abt);
 		fin.add(t0tweaks);
 		//fin.add(slider);
 		fin.add(pb);
 		
 		command.add(fin);
-		Dimension dim = new Dimension(400, 300);
+		Dimension dim = new Dimension(400, 400);
 		command.setSize(dim);
 		command.setMaximumSize(dim);
 		command.setMaximumSize(dim);

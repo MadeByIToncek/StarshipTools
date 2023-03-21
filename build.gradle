@@ -14,10 +14,14 @@ repositories {
     maven {
         url = uri('https://repo.maven.apache.org/maven2/')
     }
+    maven {
+        url "https://raw.githubusercontent.com/kusaanko/maven/main/"
+    }
 }
 
 dependencies {
     api 'org.jetbrains:annotations:23.1.0'
+    implementation 'com.github.kusaanko:YouTubeLiveChat:latest.release'
 }
 
 jar {
