@@ -11,27 +11,16 @@
 
 package cz.iqlandia.iqplanetarium.buttons;
 
-import com.github.kusaanko.youtubelivechat.*;
 import cz.iqlandia.iqplanetarium.*;
 import cz.iqlandia.iqplanetarium.chat.*;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.*;
 
 public class ToolButtonListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String link = JOptionPane.showInputDialog("Vložte adresu vašeho youtube streamu");
-		try {
-			Main.tools = new ChatTools(link) {
-				@Override
-				public void onMessage(ChatItem item) {
-				
-				}
-			};
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		Main.tools = new ChatTools(link);
 	}
 }
