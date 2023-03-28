@@ -42,15 +42,12 @@ public class Main {
 	public static Instant t0 = LocalDateTime.of(2023, 3, 12, 14, 30, 0).toInstant(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.of(2023, 3, 12, 14, 30, 0)));
 	public static JProgressBar pb;
 	public static Overlay ovr = new Overlay();
-	public static ChatTools tools = null;
-	public static Timer timer;
+	public static ChatTools tools = new ChatTools("mhJRzQsLZGg");
+	public static Timer timer = new Timer();
 	public static List<String> questions = new ArrayList<>();
-	public static ObsComms obs;
+	public static ObsComms obs = new ObsComms();
 	
 	public static void main(String[] args) {
-		tools = new ChatTools("mhJRzQsLZGg");
-		timer = new Timer();
-		obs = new ObsComms();
 		// ----------------------------------------- COMMAND WINDOW LOADING -------------------------------------------------
 		JButton next = new JButton();
 		next.setText("Next event");
@@ -89,17 +86,19 @@ public class Main {
 		
 		JButton simpleMode = new JButton("Switch modes");
 		simpleMode.addActionListener((a) -> {
-			try {
-				obs.hide();
-				sleep(1100);
-				simple = !simple;
-				sleep(1100);
-				obs.show();
-			} catch (InterruptedException e) {
-				JDialog dialog = new JDialog();
-				dialog.add(new JLabel(e.getLocalizedMessage()));
-				e.printStackTrace();
-			}
+			new Thread(() -> {
+				try {
+					obs.hide();
+					sleep(1100);
+					simple = !simple;
+					sleep(1100);
+					obs.show();
+				} catch (InterruptedException e) {
+					JDialog dialog = new JDialog();
+					dialog.add(new JLabel(e.getLocalizedMessage()));
+					e.printStackTrace();
+				}
+			}).start();
 		});
 		
 		
@@ -152,7 +151,9 @@ public class Main {
 		command.setSize(dim);
 		command.setMaximumSize(dim);
 		command.setMaximumSize(dim);
-		command.setLocation(-1800, 142);
+		if(Objects.equals(System.getenv("DEV"), "true")) {
+			command.setLocation(-1800, 142);
+		}
 		command.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent) {
 				overlay.setVisible(false);
@@ -170,7 +171,9 @@ public class Main {
 		overlay.setMinimumSize(fullhd);
 		overlay.setMaximumSize(fullhd);
 		overlay.setResizable(false);
-		overlay.setLocation(-3830, 50);
+		if(Objects.equals(System.getenv("DEV"), "true")) {
+			overlay.setLocation(-3830, 50);
+		}
 		overlay.setVisible(true);
 		
 		// ----------------------------------------- THREAD SETUP ----------------------------------------------------------
