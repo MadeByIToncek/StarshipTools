@@ -94,8 +94,9 @@ public class Overlay extends JPanel {
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(40F));
 		fm = getFontMetrics(g.getFont());
 		LocalTime time = LocalTime.now();
+		LocalTime bc = LocalTime.now().minusHours(5);
 		
-		String times = String.format("%02d:%02d:%02d TX // %02d:%02d:%02d CZ", time.getHour() - 5, time.getMinute(), time.getSecond(), time.getHour(), time.getMinute(), time.getSecond());
+		String times = String.format("%02d:%02d:%02d TX // %02d:%02d:%02d CZ", bc.getHour(), bc.getMinute(), bc.getSecond(), time.getHour(), time.getMinute(), time.getSecond());
 		width = fm.stringWidth(times);
 		
 		// --> DRAWING TIME BOX HERE <--
