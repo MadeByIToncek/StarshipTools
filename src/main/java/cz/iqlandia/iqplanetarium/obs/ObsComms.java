@@ -13,14 +13,23 @@ package cz.iqlandia.iqplanetarium.obs;
 
 import io.obswebsocket.community.client.*;
 import io.obswebsocket.community.client.message.response.sceneitems.*;
+import org.json.*;
 
 import javax.swing.*;
+import java.io.*;
+import java.util.*;
+
+import static java.lang.Thread.*;
 
 public class ObsComms {
 	private final OBSRemoteController controller;
 	private boolean ready;
+	private String address;
+	private int port;
+	
 	
 	public ObsComms() {
+		cfg();
 		controller = OBSRemoteController.builder()
 				// set options, register for events, etc.
 				// continue reading for more information
@@ -42,6 +51,35 @@ public class ObsComms {
 				.and()
 				.build();
 		controller.connect();
+	}
+	
+	private void cfg() {
+		if(!new File("./config/").exists()) {
+			new File("./config/").mkdirs();
+		}
+		
+		if(!new File("./config/obs.json").exists()) {
+			try (FileWriter fw = new FileWriter("./config/obs.json")) {
+				JSONObject object = new JSONObject();
+				object.put("address", "localhost");
+				object.put("port", 4444);
+				fw.write(object.toString(4));
+				sleep(200);
+			} catch (IOException | InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		JSONObject object;
+		try (Scanner sc = new Scanner(new File("./config/obs.json"))) {
+			StringBuilder sb = new StringBuilder();
+			while (sc.hasNextLine()) sb.append(sc.nextLine()).append("\n");
+			object = new JSONObject(sb.toString());
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		address = object.getString("address");
+		port = object.getInt("port");
 	}
 	
 	public void hide() {
