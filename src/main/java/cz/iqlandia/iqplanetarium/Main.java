@@ -151,7 +151,9 @@ public class Main {
 		command.setSize(dim);
 		command.setMaximumSize(dim);
 		command.setMaximumSize(dim);
-		command.setLocation(-1800, 142);
+		if(Objects.equals(System.getenv("DEV"), "true")) {
+			command.setLocation(-1800, 142);
+		}
 		command.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent) {
 				overlay.setVisible(false);
@@ -169,7 +171,9 @@ public class Main {
 		overlay.setMinimumSize(fullhd);
 		overlay.setMaximumSize(fullhd);
 		overlay.setResizable(false);
-		overlay.setLocation(-3830, 50);
+		if(Objects.equals(System.getenv("DEV"), "true")) {
+			overlay.setLocation(-3830, 50);
+		}
 		overlay.setVisible(true);
 		
 		// ----------------------------------------- THREAD SETUP ----------------------------------------------------------
