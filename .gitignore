@@ -13,6 +13,7 @@ target/
 *.ipr
 fonts/*
 .gradle
+/config
 
 ### Eclipse ###
 .apt_generated

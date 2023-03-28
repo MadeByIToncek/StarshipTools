@@ -18,6 +18,7 @@ import cz.iqlandia.iqplanetarium.graphics.*;
 import cz.iqlandia.iqplanetarium.obs.*;
 import cz.iqlandia.iqplanetarium.utils.State;
 import cz.iqlandia.iqplanetarium.utils.*;
+import org.json.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -231,24 +232,89 @@ public class Main {
 	}
 	
 	public static ArrayList<CountdownEvent> calcEvents(boolean post) {
-		ArrayList<CountdownEvent> temp = new ArrayList<>();
+		File read;
 		if(post) {
-			temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 100, 0.03f));
-			temp.add(new CountdownEvent("Pitch over", "Raketa začne gravitační oblouk.", null, 300, 0.16f));
-			temp.add(new CountdownEvent("Max-Q", "Moment nejvyššího aerodynamického namáhání rakety.", null, 550, 0.29f));
-			temp.add(new CountdownEvent("MECO", "B7 vypne svých 33 raptor motorů", null, 700, 0.375f));
-			temp.add(new CountdownEvent("Rozdělení stupňů", "B7 zamíří zpět k pevnině, S24 pokračuje dále na orbitu.", null, 850, 0.51f));
-			temp.add(new CountdownEvent("RapVac start", "Motory S24 byly zažehnuty", null, 1200, 0.7f));
-			temp.add(new CountdownEvent("A co dál?", "A co dále? Nevíme :D", null, 1650, 0.94f));
+			read = new File("./config/postlaunch.json");
+			if(!read.exists()) {
+				ArrayList<CountdownEvent> temp = new ArrayList<>();
+				temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 100, 0.03f));
+				temp.add(new CountdownEvent("Pitch over", "Raketa začne gravitační oblouk.", null, 300, 0.16f));
+				temp.add(new CountdownEvent("Max-Q", "Moment nejvyššího aerodynamického namáhání rakety.", null, 550, 0.29f));
+				temp.add(new CountdownEvent("MECO", "B7 vypne svých 33 raptor motorů", null, 700, 0.375f));
+				temp.add(new CountdownEvent("Rozdělení stupňů", "B7 zamíří zpět k pevnině, S24 pokračuje dále na orbitu.", null, 850, 0.51f));
+				temp.add(new CountdownEvent("RapVac start", "Motory S24 byly zažehnuty", null, 1200, 0.7f));
+				temp.add(new CountdownEvent("A co dál?", "A co dále? Nevíme :D", null, 1650, 0.94f));
+				
+				if(!new File("./config/").exists()) {
+					new File("./config/").mkdirs();
+				}
+				
+				try (FileWriter fw = new FileWriter(read)) {
+					JSONArray arr = new JSONArray();
+					for (CountdownEvent e : temp) {
+						JSONObject o = new JSONObject();
+						o.put("name", e.name());
+						o.put("description", e.description());
+						o.put("time", e.time());
+						o.put("x", e.x());
+						o.put("ratio", e.ratio());
+						arr.put(o);
+					}
+					fw.write(arr.toString(4));
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
 		} else {
-			temp.add(new CountdownEvent("Cesta uzavřena", "Cesta TX4 je uzavřena před OFT-1", null, 95, 0.06f));
-			temp.add(new CountdownEvent("Rampa evakuována", "Veškerý personál opustil blízkost rakety", null, 400, 0.27f));
-			temp.add(new CountdownEvent("Rekondenzátor", "Reknodenzátor byl zapnut", null, 740, 0.43f));
-			temp.add(new CountdownEvent("Tankování", "Raketa se plní tekutým metanem a tekutým kyslíkem", null, 1060, 0.60f));
-			temp.add(new CountdownEvent("Chlazení motorů", "Raketa začne posílat do motorů kyslík aby ho připravila na chladné plyny.", null, 1300, 0.77f));
-			temp.add(new CountdownEvent("Zážeh!", "Motory byly zažehnuty", null, 1593, 0.89f));
-			temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 1717, 0.97f));
+			read = new File("./config/prelaunch.json");
+			if(!read.exists()) {
+				ArrayList<CountdownEvent> temp = new ArrayList<>();
+				temp.add(new CountdownEvent("Cesta uzavřena", "Cesta TX4 je uzavřena před OFT-1", null, 95, 0.06f));
+				temp.add(new CountdownEvent("Rampa evakuována", "Veškerý personál opustil blízkost rakety", null, 400, 0.27f));
+				temp.add(new CountdownEvent("Rekondenzátor", "Reknodenzátor byl zapnut", null, 740, 0.43f));
+				temp.add(new CountdownEvent("Tankování", "Raketa se plní tekutým metanem a tekutým kyslíkem", null, 1060, 0.60f));
+				temp.add(new CountdownEvent("Chlazení motorů", "Raketa začne posílat do motorů kyslík aby ho připravila na chladné plyny.", null, 1300, 0.77f));
+				temp.add(new CountdownEvent("Zážeh!", "Motory byly zažehnuty", null, 1593, 0.89f));
+				temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 1717, 0.97f));
+				
+				if(!new File("./config/").exists()) {
+					new File("./config/").mkdirs();
+				}
+				
+				try (FileWriter fw = new FileWriter(read)) {
+					JSONArray arr = new JSONArray();
+					for (CountdownEvent e : temp) {
+						JSONObject o = new JSONObject();
+						o.put("name", e.name());
+						o.put("description", e.description());
+						o.put("x", e.x());
+						o.put("ratio", e.ratio());
+						arr.put(o);
+					}
+					fw.write(arr.toString(4));
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
 		}
+		JSONArray array;
+		try (Scanner sc = new Scanner(read)) {
+			StringBuilder sb = new StringBuilder();
+			while (sc.hasNextLine()) sb.append(sc.nextLine()).append("\n");
+			array = new JSONArray(sb.toString());
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		
+		ArrayList<CountdownEvent> temp = new ArrayList<>();
+		
+		for (Object o : array) {
+			JSONObject obj = (JSONObject) o;
+			CountdownEvent e = new CountdownEvent(obj.getString("name"), obj.getString("description"), null, obj.getInt("x"), obj.getFloat("ratio"));
+			temp.add(e);
+		}
+		
+		
 		return temp;
 	}
 	
