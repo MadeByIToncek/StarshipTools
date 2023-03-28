@@ -24,7 +24,7 @@ public class ObsComms {
 		controller = OBSRemoteController.builder()
 				// set options, register for events, etc.
 				// continue reading for more information
-				.host("192.168.99.64")
+				.host("localhost")
 				.port(4444)
 				.lifecycle()
 				.onReady(() -> {
