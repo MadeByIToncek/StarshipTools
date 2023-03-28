@@ -25,6 +25,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
+import java.nio.channels.*;
 import java.time.*;
 import java.util.List;
 import java.util.Timer;
@@ -49,6 +50,7 @@ public class Main {
 	public static ObsComms obs = new ObsComms();
 	
 	public static void main(String[] args) {
+		update();
 		// ----------------------------------------- COMMAND WINDOW LOADING -------------------------------------------------
 		JButton next = new JButton();
 		next.setText("Next event");
@@ -191,6 +193,50 @@ public class Main {
 		getCurrent().set(0, new CountdownEvent(ev.name(), ev.description(), LocalTime.now(), ev.x(), ev.ratio()));
 		pb.setValue(Main.index + 1);
 		ovr.bar.setTarget(getCurrent().get(index).ratio());
+	}
+	
+	private static void update() {
+		if(new File("updater.jar").exists()) {
+			new File("updater.jar").delete();
+		}
+		if(new File("./config/version").exists()) {
+			try (Scanner sc = new Scanner(new File("./config/version"))) {
+				String current = sc.next();
+				String online = "";
+				try (Scanner sca = new Scanner(new URL("https://api.github.com/repos/MadeByIToncek/StarshipTools/releases").openStream());
+						FileWriter fw = new FileWriter("./config/version")) {
+					StringBuilder sb = new StringBuilder();
+					while (sca.hasNextLine()) sb.append(sca.nextLine()).append("\n");
+					JSONArray array = new JSONArray(sb.toString());
+					online = array.getJSONObject(0).getString("tag_name");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				if(!Objects.equals(online, current)) {
+					try (FileOutputStream fileOutputStream = new FileOutputStream("updater.jar")) {
+						ReadableByteChannel readableByteChannel = Channels.newChannel(new URL("https://github.com/MadeByIToncek/StarshipTools/raw/main/updater.jar").openStream());
+						fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					String cmd = "cmd.exe /C START /D \"" + new File("./").getAbsolutePath() + "\" /MIN javaw.exe -jar updater.jar";
+					Runtime.getRuntime().exec(cmd);
+					System.exit(1);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			try (Scanner sc = new Scanner(new URL("https://api.github.com/repos/MadeByIToncek/StarshipTools/releases").openStream());
+					FileWriter fw = new FileWriter("./config/version")) {
+				StringBuilder sb = new StringBuilder();
+				while (sc.hasNextLine()) sb.append(sc.nextLine()).append("\n");
+				JSONArray array = new JSONArray(sb.toString());
+				fw.write(array.getJSONObject(0).getString("tag_name"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public static Font font(FontFamily family, FontVariant variant) {

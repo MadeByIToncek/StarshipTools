@@ -14,7 +14,7 @@
 
     <groupId>cz.iqlandia.iqplanetarium</groupId>
     <artifactId>StarshipTools</artifactId>
-    <version>23w13b</version>
+    <version>23w13c</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -43,6 +43,11 @@
             <artifactId>json</artifactId>
             <version>20230227</version>
         </dependency>
+        <dependency>
+            <groupId>org.update4j</groupId>
+            <artifactId>update4j</artifactId>
+            <version>1.5.9</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -65,30 +70,11 @@
                     <target>17</target>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Main-Class>cz.iqlandia.iqplanetarium.Main</Main-Class>
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
     </build>
+    <packaging>pom</packaging>
+    <modules>
+        <module>updater</module>
+        <module>overlay</module>
+    </modules>
 </project>

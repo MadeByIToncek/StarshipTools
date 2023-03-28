@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2023 - IToncek
+  ~
+  ~ All rights to modifying this source code are granted, except for changing licence.
+  ~ Any and all products generated from this source code must be shared with a link
+  ~ to the original creator with clear and well-defined mention of the original creator.
+  ~ This applies to any lower level copies, that are doing approximately the same thing.
+  ~ If you are not sure, if your usage is within these boundaries, please contact the
+  ~ author on their public email address.
+  -->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>StarshipTools</artifactId>
+        <groupId>cz.iqlandia.iqplanetarium</groupId>
+        <version>23w13b</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>cz.iqlandia.iqplanetarium.StarshipTools</groupId>
+    <artifactId>updater</artifactId>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer>
+                                    <manifestEntries>
+                                        <Main-Class>cz.iqlandia.iqplanetarium.StarshipTools.Main</Main-Class>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <properties>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+</project>
+
