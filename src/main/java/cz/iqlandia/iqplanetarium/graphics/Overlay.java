@@ -55,9 +55,11 @@ public class Overlay extends JPanel {
 		//Rectangles
 		g.setColor(iqPrimary);
 		//Name
-		g.fillRect(76, 855, 400, 55);
-		//Bar
-		g.fillRect(76, 913, 1768, 127);
+		if(!simple) {
+			//Bar
+			g.fillRect(76, 855, 400, 55);
+			g.fillRect(76, 913, 1768, 127);
+		}
 		//Camera
 		drawDashedSquare(g, 76, 47, 501, 286);
 		//GO/ABORT/HOLD/RUD info
@@ -80,9 +82,6 @@ public class Overlay extends JPanel {
 		}
 		width = fm.stringWidth(tim);
 		
-		
-		//T0
-//		g.fillRect(1555, 138, 306, 54);
 		// --> DRAWING TIME BOX HERE <--
 		g.setColor(iqPrimary);
 		g.fillRect(1851 - width, 138, width + 10, 54);
@@ -94,10 +93,9 @@ public class Overlay extends JPanel {
 		
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(40F));
 		fm = getFontMetrics(g.getFont());
-		LocalTime bocatime = LocalTime.now().atOffset(ZoneOffset.ofHours(-5)).toLocalTime();
-		LocalTime turtime = LocalTime.now();
+		LocalTime time = LocalTime.now();
 		
-		String times = String.format("%02d:%02d:%02d TX // %02d:%02d:%02d CZ", bocatime.getHour(), bocatime.getMinute(), bocatime.getSecond(), turtime.getHour(), turtime.getMinute(), turtime.getSecond());
+		String times = String.format("%02d:%02d:%02d TX // %02d:%02d:%02d CZ", time.getHour() - 5, time.getMinute(), time.getSecond(), time.getHour(), time.getMinute(), time.getSecond());
 		width = fm.stringWidth(times);
 		
 		// --> DRAWING TIME BOX HERE <--
@@ -107,9 +105,11 @@ public class Overlay extends JPanel {
 		
 		g.drawString(times, 1860 - width, 123);
 		
-		// Starship OFT - 1
-		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(44F));
-		g.drawString("Starship OFT - 1", 94, 895);
+		if(!simple) {
+			// Starship OFT - 1
+			g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(44F));
+			g.drawString("Starship OFT - 1", 94, 895);
+		}
 		
 		//State
 		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(48F));
@@ -117,34 +117,32 @@ public class Overlay extends JPanel {
 			g.drawString(state.name(), state.getTxpos(), 242);
 		}
 		
-		//Bar
-		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(28F));
-		for (CountdownEvent event : getCurrent()) {
-			if(event.ratio() > bar.getCurrent()) {
-				g.setColor(new Color(58, 65, 68));
-			} else if(event.ratio() == bar.getCurrent()) {
-				g.setColor(Color.WHITE);
-			} else {
-				g.setColor(new Color(175, 222, 246));
+		if(!simple) {
+			//Bar
+			g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(28F));
+			for (CountdownEvent event : getCurrent()) {
+				if(event.ratio() > bar.getCurrent()) {
+					g.setColor(new Color(58, 65, 68));
+				} else if(event.ratio() == bar.getCurrent()) {
+					g.setColor(Color.WHITE);
+				} else {
+					g.setColor(new Color(175, 222, 246));
+				}
+				g.drawChars(event.name().toCharArray(), 0, event.name().toCharArray().length, event.x(), 1015);
+				if(event.time() != null) {
+					g.setColor(Color.WHITE);
+					g.drawString(String.format("%02d:%02d", event.time().getHour(), event.time().getMinute()), (int) (event.ratio() * maxlenght) + 60, 948);
+				}
 			}
-			g.drawChars(event.name().toCharArray(), 0, event.name().toCharArray().length, event.x(), 1015);
-			if(event.time() != null) {
-				g.setColor(Color.WHITE);
-				g.drawString(String.format("%02d:%02d", event.time().getHour(), event.time().getMinute()), (int) (event.ratio() * maxlenght) + 60, 948);
-			}
+			
+			// ====================  Progressbar  ====================
+			g.setColor(new Color(58, 65, 68));
+			g.fillRect(95, 963, 1730, 8);
+			g.setColor(iqSecondary);
+			
+			g.fillRect(96, 964, (int) Math.round(bar.step() * maxlenght), 6);
+			
 		}
-		
-		// ====================  Progressbar  ====================
-		g.setColor(new Color(58, 65, 68));
-		g.fillRect(95, 963, 1730, 8);
-		g.setColor(iqSecondary);
-//		if(targetlenght - barlenght > 0.0005) {
-//			barlenght = ((targetlenght - barlenght) / 5) + barlenght;
-//		} else {
-//			barlenght = targetlenght;
-//		}
-		
-		g.fillRect(96, 964, (int) Math.round(bar.step() * maxlenght), 6);
 		// ====================  Rendering  ====================
 		g.dispose();
 	}

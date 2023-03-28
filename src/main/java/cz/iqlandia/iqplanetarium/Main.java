@@ -12,8 +12,11 @@
 package cz.iqlandia.iqplanetarium;
 
 import cz.iqlandia.iqplanetarium.buttons.*;
+import cz.iqlandia.iqplanetarium.chat.*;
 import cz.iqlandia.iqplanetarium.fonts.*;
 import cz.iqlandia.iqplanetarium.graphics.*;
+import cz.iqlandia.iqplanetarium.obs.*;
+import cz.iqlandia.iqplanetarium.utils.State;
 import cz.iqlandia.iqplanetarium.utils.*;
 
 import javax.swing.*;
@@ -26,18 +29,28 @@ import java.util.List;
 import java.util.Timer;
 import java.util.*;
 
+import static java.lang.Thread.*;
+
 public class Main {
 	public static JFrame overlay = new JFrame("Starship Overlay | StarshipTools.jar");
 	public static JFrame command = new JFrame("Command | StarshipTools.jar");
 	public static boolean post = false;
+	public static boolean simple = true;
 	public static List<CountdownEvent> prelaunch = calcEvents(false);
 	public static List<CountdownEvent> postlaunch = calcEvents(true);
 	public static int index = 0;
 	public static Instant t0 = LocalDateTime.of(2023, 3, 12, 14, 30, 0).toInstant(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.of(2023, 3, 12, 14, 30, 0)));
 	public static JProgressBar pb;
 	public static Overlay ovr = new Overlay();
+	public static ChatTools tools = null;
+	public static Timer timer;
+	public static List<String> questions = new ArrayList<>();
+	public static ObsComms obs;
 	
-	public static void main(String[] args) throws URISyntaxException {
+	public static void main(String[] args) {
+		tools = new ChatTools("mhJRzQsLZGg");
+		timer = new Timer();
+		obs = new ObsComms();
 		// ----------------------------------------- COMMAND WINDOW LOADING -------------------------------------------------
 		JButton next = new JButton();
 		next.setText("Next event");
@@ -49,6 +62,46 @@ public class Main {
 		prev.addActionListener(new ButtonEvent());
 		pb = new JProgressBar(0, getCurrent().size() + 1);
 		pb.setValue(index + 1);
+		
+		JButton toolButton = new JButton("Select message");
+		toolButton.addActionListener(e -> {
+			JFrame frame = new JFrame("ChatPicker | StarshipTools.jar");
+			
+			JComboBox<String> comboBox = new JComboBox<>();
+			
+			for (int i = 1; i < tools.getMessages().size(); i++) {
+				int index = tools.getMessages().size() - i;
+				comboBox.addItem(tools.getMessages().get(index).getAuthorName() + " | " + tools.getMessages().get(index).getMessage());
+			}
+			
+			JButton done = new JButton("Submit");
+			done.addActionListener(e1 -> {
+				frame.setVisible(false);
+				questions.add((String) comboBox.getSelectedItem());
+			});
+			JPanel panel = new JPanel();
+			panel.add(comboBox);
+			panel.add(done);
+			frame.add(panel);
+			frame.pack();
+			frame.setVisible(true);
+		});
+		
+		JButton simpleMode = new JButton("Switch modes");
+		simpleMode.addActionListener((a) -> {
+			try {
+				obs.hide();
+				sleep(1100);
+				simple = !simple;
+				sleep(1100);
+				obs.show();
+			} catch (InterruptedException e) {
+				JDialog dialog = new JDialog();
+				dialog.add(new JLabel(e.getLocalizedMessage()));
+				e.printStackTrace();
+			}
+		});
+		
 		
 		JSlider slider = new JSlider(JSlider.HORIZONTAL);
 		slider.setMaximum(100);
@@ -81,17 +134,21 @@ public class Main {
 		t0set.addActionListener(new ButtonT0());
 		t0tweaks.add(t0set);
 		
+		JPanel act = new JPanel(new GridLayout(1, 2));
+		act.add(toolButton);
+		act.add(simpleMode);
 		
-		JPanel fin = new JPanel(new GridLayout(5, 1));
+		JPanel fin = new JPanel(new GridLayout(6, 1));
 		fin.add(new Title());
 		fin.add(prevnext);
+		fin.add(act);
 		fin.add(abt);
 		fin.add(t0tweaks);
 		//fin.add(slider);
 		fin.add(pb);
 		
 		command.add(fin);
-		Dimension dim = new Dimension(400, 300);
+		Dimension dim = new Dimension(400, 400);
 		command.setSize(dim);
 		command.setMaximumSize(dim);
 		command.setMaximumSize(dim);
@@ -117,7 +174,6 @@ public class Main {
 		overlay.setVisible(true);
 		
 		// ----------------------------------------- THREAD SETUP ----------------------------------------------------------
-		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
@@ -148,13 +204,17 @@ public class Main {
 				stream.transferTo(fos);
 				return Font.createFont(0, new File("./fonts/" + family.getFolder() + "/" + variant.getFilename() + family.getSuffix()));
 			} catch (IOException | FontFormatException e) {
-				throw new RuntimeException(e);
+				JDialog dialog = new JDialog();
+				dialog.add(new JLabel(e.getLocalizedMessage()));
+				return null;
 			}
 		} else {
 			try {
 				return Font.createFont(0, new File("./fonts/" + family.getFolder() + "/" + variant.getFilename() + family.getSuffix()));
 			} catch (FontFormatException | IOException e) {
-				throw new RuntimeException(e);
+				JDialog dialog = new JDialog();
+				dialog.add(new JLabel(e.getLocalizedMessage()));
+				return null;
 			}
 		}
 	}
