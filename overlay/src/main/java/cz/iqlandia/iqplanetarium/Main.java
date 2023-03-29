@@ -25,7 +25,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
-import java.nio.channels.*;
 import java.time.*;
 import java.util.List;
 import java.util.Timer;
@@ -34,23 +33,66 @@ import java.util.*;
 import static java.lang.Thread.*;
 
 public class Main {
-	public static JFrame overlay = new JFrame("Starship Overlay | StarshipTools.jar");
-	public static JFrame command = new JFrame("Command | StarshipTools.jar");
+	public static JFrame overlay;
+	public static JFrame command;
 	public static boolean post = false;
 	public static boolean simple = true;
-	public static List<CountdownEvent> prelaunch = calcEvents(false);
-	public static List<CountdownEvent> postlaunch = calcEvents(true);
+	public static List<CountdownEvent> prelaunch;
+	public static List<CountdownEvent> postlaunch;
 	public static int index = 0;
-	public static Instant t0 = LocalDateTime.of(2023, 3, 12, 14, 30, 0).toInstant(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.of(2023, 3, 12, 14, 30, 0)));
+	public static Instant t0;
 	public static JProgressBar pb;
-	public static Overlay ovr = new Overlay();
-	public static ChatTools tools = new ChatTools("mhJRzQsLZGg");
-	public static Timer timer = new Timer();
-	public static List<String> questions = new ArrayList<>();
-	public static ObsComms obs = new ObsComms();
+	public static Overlay ovr;
+	public static ChatTools tools;
+	public static Timer timer;
+	public static List<String> questions;
+	public static ObsComms obs;
 	
 	public static void main(String[] args) {
-		update();
+		JFrame f = new JFrame("Loading | StarshipTools.jar");
+		JProgressBar pba = new JProgressBar(JProgressBar.HORIZONTAL);
+		pba.setValue(0);
+		pba.setMaximum(11);
+		pba.addChangeListener((c) -> System.out.println(pba.getString()));
+		pba.setStringPainted(true);
+		pba.setString("Booting");
+		f.add(pba);
+		f.setSize(400, 100);
+		f.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent windowEvent) {
+				f.setVisible(false);
+				System.exit(0);
+			}
+		});
+		
+		f.setVisible(true);
+		
+		//Assigning static variables
+		overlay = new JFrame("Starship Overlay | StarshipTools.jar");
+		command = new JFrame("Command | StarshipTools.jar");
+		pba.setString("Windows initialized | Loading events");
+		pba.setValue(1);
+		prelaunch = calcEvents(false);
+		postlaunch = calcEvents(true);
+		pba.setString("Events initialized | Loading T0");
+		pba.setValue(2);
+		t0 = LocalDateTime.of(2023, 3, 12, 14, 30, 0).toInstant(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.of(2023, 3, 12, 14, 30, 0)));
+		pba.setString("T0 set | Loading overlay");
+		pba.setValue(3);
+		ovr = new Overlay();
+		pba.setString("Overlay initialized | Loading Chat tools");
+		pba.setValue(4);
+		tools = new ChatTools("mhJRzQsLZGg");
+		pba.setString("Chat tools initialized | Loading timer");
+		pba.setValue(5);
+		timer = new Timer();
+		pba.setString("Timer initialized | Loading OBS");
+		pba.setValue(6);
+		questions = new ArrayList<>();
+		obs = new ObsComms();
+		pba.setString("OBS initialized | Constructing command window");
+		pba.setValue(7);
+		
 		// ----------------------------------------- COMMAND WINDOW LOADING -------------------------------------------------
 		JButton next = new JButton();
 		next.setText("Next event");
@@ -88,30 +130,28 @@ public class Main {
 		});
 		
 		JButton simpleMode = new JButton("Switch modes");
-		simpleMode.addActionListener((a) -> {
-			new Thread(() -> {
-				try {
-					obs.hide();
-					sleep(1100);
-					simple = !simple;
-					sleep(1100);
-					obs.show();
-				} catch (InterruptedException e) {
-					JDialog dialog = new JDialog();
-					dialog.add(new JLabel(e.getLocalizedMessage()));
-					e.printStackTrace();
-				}
-			}).start();
-		});
-		
-		
-		JSlider slider = new JSlider(JSlider.HORIZONTAL);
-		slider.setMaximum(100);
-		slider.setMinimum(0);
-		slider.addChangeListener(e -> {
-			ovr.bar.setTarget(slider.getValue() / 100f);
-			System.out.println(slider.getValue() / 100f);
-		});
+		simpleMode.addActionListener((a) -> new Thread(() -> {
+			try {
+				obs.hide();
+				sleep(1100);
+				simple = !simple;
+				sleep(1100);
+				obs.show();
+			} catch (InterruptedException e) {
+				JDialog dialog = new JDialog();
+				dialog.add(new JLabel(e.getLocalizedMessage()));
+				e.printStackTrace();
+			}
+		}).start());
+
+
+//		JSlider slider = new JSlider(JSlider.HORIZONTAL);
+//		slider.setMaximum(100);
+//		slider.setMinimum(0);
+//		slider.addChangeListener(e -> {
+//			ovr.bar.setTarget(slider.getValue() / 100f);
+//			System.out.println(slider.getValue() / 100f);
+//		});
 		
 		JPanel prevnext = new JPanel(new GridLayout(1, 2));
 		prevnext.add(prev);
@@ -164,7 +204,9 @@ public class Main {
 				System.exit(0);
 			}
 		});
-		command.setVisible(true);
+		
+		pba.setString("Command window set up | Constructing overlay window");
+		pba.setValue(8);
 		
 		// ----------------------------------------- OVERLAY WINDOW LOADING -------------------------------------------------
 		
@@ -177,7 +219,15 @@ public class Main {
 		if(Objects.equals(System.getenv("DEV"), "true")) {
 			overlay.setLocation(-3830, 50);
 		}
-		overlay.setVisible(true);
+		overlay.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent windowEvent) {
+				overlay.setVisible(false);
+				command.setVisible(false);
+				System.exit(0);
+			}
+		});
+		pba.setString("Overlay window set up | Preparing timer");
+		pba.setValue(9);
 		
 		// ----------------------------------------- THREAD SETUP ----------------------------------------------------------
 		timer.schedule(new TimerTask() {
@@ -188,55 +238,19 @@ public class Main {
 		}, 40, 40);
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(timer::cancel));
+		pba.setString("Timer set up | Final tweaks");
+		pba.setValue(10);
 		
 		CountdownEvent ev = getCurrent().get(0);
 		getCurrent().set(0, new CountdownEvent(ev.name(), ev.description(), LocalTime.now(), ev.x(), ev.ratio()));
 		pb.setValue(Main.index + 1);
 		ovr.bar.setTarget(getCurrent().get(index).ratio());
-	}
-	
-	private static void update() {
-		if(new File("updater.jar").exists()) {
-			new File("updater.jar").delete();
-		}
-		if(new File("./config/version").exists()) {
-			try (Scanner sc = new Scanner(new File("./config/version"))) {
-				String current = sc.next();
-				String online = "";
-				try (Scanner sca = new Scanner(new URL("https://api.github.com/repos/MadeByIToncek/StarshipTools/releases").openStream());
-						FileWriter fw = new FileWriter("./config/version")) {
-					StringBuilder sb = new StringBuilder();
-					while (sca.hasNextLine()) sb.append(sca.nextLine()).append("\n");
-					JSONArray array = new JSONArray(sb.toString());
-					online = array.getJSONObject(0).getString("tag_name");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				if(!Objects.equals(online, current)) {
-					try (FileOutputStream fileOutputStream = new FileOutputStream("updater.jar")) {
-						ReadableByteChannel readableByteChannel = Channels.newChannel(new URL("https://github.com/MadeByIToncek/StarshipTools/raw/main/updater.jar").openStream());
-						fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					String cmd = "cmd.exe /C START /D \"" + new File("./").getAbsolutePath() + "\" /MIN javaw.exe -jar updater.jar";
-					Runtime.getRuntime().exec(cmd);
-					System.exit(1);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			try (Scanner sc = new Scanner(new URL("https://api.github.com/repos/MadeByIToncek/StarshipTools/releases").openStream());
-					FileWriter fw = new FileWriter("./config/version")) {
-				StringBuilder sb = new StringBuilder();
-				while (sc.hasNextLine()) sb.append(sc.nextLine()).append("\n");
-				JSONArray array = new JSONArray(sb.toString());
-				fw.write(array.getJSONObject(0).getString("tag_name"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		pba.setString("Ready!");
+		pba.setValue(11);
+		// ----------------------------------------- SHOWING WINDOWS -----------------------------------------------------
+		f.setVisible(false);
+		command.setVisible(true);
+		overlay.setVisible(true);
 	}
 	
 	public static Font font(FontFamily family, FontVariant variant) {
