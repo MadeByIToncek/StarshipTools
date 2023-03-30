@@ -19,8 +19,6 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
-import static java.lang.Thread.*;
-
 public class ObsComms {
 	private final OBSRemoteController controller;
 	private boolean ready;
@@ -64,8 +62,7 @@ public class ObsComms {
 				object.put("address", "localhost");
 				object.put("port", 4444);
 				fw.write(object.toString(4));
-				sleep(200);
-			} catch (IOException | InterruptedException e) {
+			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}

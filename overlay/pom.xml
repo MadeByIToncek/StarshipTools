@@ -27,6 +27,13 @@
         <groupId>cz.iqlandia.iqplanetarium</groupId>
     </parent>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>com.github.kusaanko</groupId>
@@ -43,6 +50,11 @@
             <groupId>io.obs-websocket.community</groupId>
             <artifactId>client</artifactId>
             <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.masecla22</groupId>
+            <artifactId>java-express</artifactId>
+            <version>0.2.2</version>
         </dependency>
     </dependencies>
 

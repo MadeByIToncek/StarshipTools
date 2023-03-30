@@ -11,6 +11,7 @@
 
 package cz.iqlandia.iqplanetarium;
 
+import cz.iqlandia.iqplanetarium.appcom.*;
 import cz.iqlandia.iqplanetarium.buttons.*;
 import cz.iqlandia.iqplanetarium.chat.*;
 import cz.iqlandia.iqplanetarium.fonts.*;
@@ -44,9 +45,11 @@ public class Main {
 	public static JProgressBar pb;
 	public static Overlay ovr;
 	public static ChatTools tools;
+	public static int chatIndex = -1;
 	public static Timer timer;
 	public static List<String> questions;
 	public static ObsComms obs;
+	public static AppCom appcom;
 	
 	public static void main(String[] args) {
 		JFrame f = new JFrame("Loading | StarshipTools.jar");
@@ -86,11 +89,12 @@ public class Main {
 		pba.setString("Chat tools initialized | Loading timer");
 		pba.setValue(5);
 		timer = new Timer();
-		pba.setString("Timer initialized | Loading OBS");
+		pba.setString("Timer initialized | Loading OBS and AppCom");
 		pba.setValue(6);
 		questions = new ArrayList<>();
 		obs = new ObsComms();
-		pba.setString("OBS initialized | Constructing command window");
+		appcom = new AppCom();
+		pba.setString("OBS and AppCom initialized | Constructing command window");
 		pba.setValue(7);
 		
 		// ----------------------------------------- COMMAND WINDOW LOADING -------------------------------------------------
@@ -249,8 +253,8 @@ public class Main {
 		pba.setValue(11);
 		// ----------------------------------------- SHOWING WINDOWS -----------------------------------------------------
 		f.setVisible(false);
-		command.setVisible(true);
 		overlay.setVisible(true);
+		command.setVisible(true);
 	}
 	
 	public static Font font(FontFamily family, FontVariant variant) {
