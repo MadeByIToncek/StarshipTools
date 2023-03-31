@@ -24,7 +24,6 @@ import static cz.iqlandia.iqplanetarium.Main.*;
 public class Overlay extends JPanel {
 	public State state = State.NOMINAL;
 	public Color iqPrimary = new Color(0, 163, 224);
-	Color iqSecondary = new Color(203, 239, 255);
 	public AnimatedInteger bar = new AnimatedInteger(0, 5F);
 	int maxlenght = 1728;
 	public String locktime = "";
@@ -56,9 +55,17 @@ public class Overlay extends JPanel {
 		g.setColor(iqPrimary);
 		//Name
 		if(!simple) {
+			int yoff, ysize;
+			if(!cfg.getBoolean("show-time")) {
+				yoff = 32;
+				ysize = 95;
+			} else {
+				yoff = 0;
+				ysize = 127;
+			}
 			//Bar
-			g.fillRect(76, 855, 400, 55);
-			g.fillRect(76, 913, 1768, 127);
+			g.fillRect(76, 855 + yoff, 400, 55);
+			g.fillRect(76, 913 + yoff, 1768, ysize);
 		}
 		//Camera
 		drawDashedSquare(g, 76, 47, 501, 286);
@@ -106,10 +113,15 @@ public class Overlay extends JPanel {
 		
 		g.drawString(times, 1860 - width, 123);
 		
+		
 		if(!simple) {
+			int yoff = 0;
+			if(!cfg.getBoolean("show-time")) {
+				yoff = 32;
+			}
 			// Starship OFT - 1
 			g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(44F));
-			g.drawString("Starship OFT - 1", 94, 895);
+			g.drawString("Starship OFT - 1", 94, 895 + yoff);
 		}
 		
 		//State
@@ -127,25 +139,35 @@ public class Overlay extends JPanel {
 				} else if(event.ratio() == bar.getCurrent()) {
 					g.setColor(Color.WHITE);
 				} else {
-					g.setColor(new Color(175, 222, 246));
+					g.setColor(getLight(state));
 				}
 				g.drawChars(event.name().toCharArray(), 0, event.name().toCharArray().length, event.x(), 1015);
-				if(event.time() != null) {
+				if(event.time() != null && cfg.getBoolean("show-time")) {
 					g.setColor(Color.WHITE);
 					g.drawString(String.format("%02d:%02d", event.time().getHour(), event.time().getMinute()), (int) (event.ratio() * maxlenght) + 60, 948);
 				}
 			}
 			
+			
 			// ====================  Progressbar  ====================
 			g.setColor(new Color(58, 65, 68));
 			g.fillRect(95, 963, 1730, 8);
-			g.setColor(iqSecondary);
-			
+			g.setColor(getLight(state));
 			g.fillRect(96, 964, (int) Math.round(bar.step() * maxlenght), 6);
 			
 		}
 		// ====================  Rendering  ====================
 		g.dispose();
+	}
+	
+	private Color getLight(State state) {
+		return switch (state) {
+			case NOMINAL -> new Color(175, 222, 246);
+			case GO -> new Color(178, 255, 178);
+			case HOLD -> new Color(255, 203, 142);
+			case ABORT -> new Color(255, 162, 152);
+			case RUD -> new Color(194, 194, 194);
+		};
 	}
 	
 	public void drawDashedSquare(Graphics g, int x1, int y1, int x2, int y2) {

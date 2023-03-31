@@ -23,7 +23,7 @@
 
     <parent>
         <artifactId>StarshipTools</artifactId>
-        <version>23w13f</version>
+        <version>23w13g</version>
         <groupId>cz.iqlandia.iqplanetarium</groupId>
     </parent>
 
@@ -51,10 +51,16 @@
             <artifactId>client</artifactId>
             <version>2.0.0</version>
         </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.masecla22</groupId>-->
+        <!--            <artifactId>java-express</artifactId>-->
+        <!--            <version>0.2.2</version>-->
+        <!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2 -->
         <dependency>
-            <groupId>com.github.masecla22</groupId>
-            <artifactId>java-express</artifactId>
-            <version>0.2.2</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-configuration2</artifactId>
+            <version>2.9.0</version>
         </dependency>
     </dependencies>
 

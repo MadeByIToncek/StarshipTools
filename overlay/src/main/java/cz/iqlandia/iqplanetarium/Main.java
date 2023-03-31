@@ -17,6 +17,7 @@ import cz.iqlandia.iqplanetarium.graphics.*;
 import cz.iqlandia.iqplanetarium.obs.*;
 import cz.iqlandia.iqplanetarium.utils.State;
 import cz.iqlandia.iqplanetarium.utils.*;
+import org.apache.commons.configuration2.ex.*;
 import org.json.*;
 
 import javax.swing.*;
@@ -47,9 +48,10 @@ public class Main {
 	public static Timer timer;
 	public static List<String> questions;
 	public static ObsComms obs;
+	public static JSONObject cfg;
 	// TODO: public static AppCom appcom;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ConfigurationException, IOException {
 		JFrame f = new JFrame("Loading | StarshipTools.jar");
 		JProgressBar pba = new JProgressBar(JProgressBar.HORIZONTAL);
 		pba.setValue(0);
@@ -81,11 +83,15 @@ public class Main {
 		pba.setString("T0 set | Loading overlay");
 		pba.setValue(3);
 		ovr = new Overlay();
-		pba.setString("Overlay initialized | Loading Timer");
+		pba.setString("Overlay initialized | Loading Config");
 		pba.setValue(4);
 		// TODO: tools = new ChatTools("mhJRzQsLZGg");
-		// TODO: pba.setString("Chat tools initialized | Loading timer");
-		// TODO: pba.setValue(5);
+		if(!new File("./config/cfg.json").exists()) {
+			createCFG();
+		}
+		cfg = loadCFG();
+		pba.setString("Config initialized | Loading timer");
+		pba.setValue(5);
 		timer = new Timer();
 		pba.setString("Timer initialized | Loading OBS and AppCom");
 		pba.setValue(6);
@@ -253,6 +259,33 @@ public class Main {
 		f.setVisible(false);
 		overlay.setVisible(true);
 		command.setVisible(true);
+	}
+	
+	private static JSONObject loadCFG() {
+		StringBuilder sb = new StringBuilder();
+		try (Scanner sc = new Scanner(new File("./config/cfg.json"))) {
+			while (sc.hasNextLine()) sb.append(sc.nextLine()).append("\n");
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		return new JSONObject(sb.toString());
+	}
+	
+	private static void createCFG() {
+		try {
+			new File("./config/cfg.json").createNewFile();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		JSONObject cfg = new JSONObject();
+		cfg.put("show-time", false);
+		
+		try (FileWriter fw = new FileWriter("./config/cfg.json")) {
+			fw.write(cfg.toString(4));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public static Font font(FontFamily family, FontVariant variant) {
