@@ -11,9 +11,6 @@
 
 package cz.iqlandia.iqplanetarium.buttons;
 
-import cz.iqlandia.iqplanetarium.*;
-import cz.iqlandia.iqplanetarium.chat.*;
-
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -21,6 +18,6 @@ public class ToolButtonListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String link = JOptionPane.showInputDialog("Vložte adresu vašeho youtube streamu");
-		Main.tools = new ChatTools(link);
+//		Main.tools = new ChatTools(link);
 	}
 }

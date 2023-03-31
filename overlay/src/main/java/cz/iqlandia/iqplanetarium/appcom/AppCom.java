@@ -11,14 +11,10 @@
 
 package cz.iqlandia.iqplanetarium.appcom;
 
-import com.github.kusaanko.youtubelivechat.*;
-import express.*;
 import org.json.*;
 
 import java.io.*;
 import java.util.*;
-
-import static cz.iqlandia.iqplanetarium.Main.*;
 
 public class AppCom {
 	
@@ -26,32 +22,32 @@ public class AppCom {
 	
 	public AppCom() {
 		cfg();
-		new Thread(() -> {
-			Express server = new Express();
-			
-			server.get("/submit/:id", (req, res) -> {
-				System.out.println("Selected chat " + Integer.parseInt(req.getParam("id")));
-				chatIndex = Integer.parseInt(req.getParam("id"));
-				res.send("recived");
-			});
-			
-			server.get("/questions.json", (req, res) -> {
-				JSONArray obj = new JSONArray();
-				for (int i = 0; i < tools.getMessages().size(); i++) {
-					JSONObject a = new JSONObject();
-					ChatItem chatItem = tools.getMessages().get(i);
-					a.put("a", chatItem.getAuthorName());
-					a.put("q", chatItem.getMessage());
-					a.put("id", i);
-					obj.put(a);
-				}
-				System.out.println("Requested questions");
-				res.send(obj.toString());
-			});
-			
-			
-			server.listen(port);
-		}).start();
+//		new Thread(() -> {
+//			Express server = new Express();
+//
+//			server.get("/submit/:id", (req, res) -> {
+//				System.out.println("Selected chat " + Integer.parseInt(req.getParam("id")));
+//				chatIndex = Integer.parseInt(req.getParam("id"));
+//				res.send("recived");
+//			});
+//
+//			server.get("/questions.json", (req, res) -> {
+//				JSONArray obj = new JSONArray();
+//				for (int i = 0; i < tools.getMessages().size(); i++) {
+//					JSONObject a = new JSONObject();
+//					ChatItem chatItem = tools.getMessages().get(i);
+//					a.put("a", chatItem.getAuthorName());
+//					a.put("q", chatItem.getMessage());
+//					a.put("id", i);
+//					obj.put(a);
+//				}
+//				System.out.println("Requested questions");
+//				res.send(obj.toString());
+//			});
+//
+//
+//			server.listen(port);
+//		}).start();
 	}
 	
 	private void cfg() {

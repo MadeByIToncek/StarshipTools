@@ -11,9 +11,7 @@
 
 package cz.iqlandia.iqplanetarium;
 
-import cz.iqlandia.iqplanetarium.appcom.*;
 import cz.iqlandia.iqplanetarium.buttons.*;
-import cz.iqlandia.iqplanetarium.chat.*;
 import cz.iqlandia.iqplanetarium.fonts.*;
 import cz.iqlandia.iqplanetarium.graphics.*;
 import cz.iqlandia.iqplanetarium.obs.*;
@@ -44,12 +42,12 @@ public class Main {
 	public static Instant t0;
 	public static JProgressBar pb;
 	public static Overlay ovr;
-	public static ChatTools tools;
-	public static int chatIndex = -1;
+	// TODO: public static ChatTools tools;
+	// TODO: public static int chatIndex = -1;
 	public static Timer timer;
 	public static List<String> questions;
 	public static ObsComms obs;
-	public static AppCom appcom;
+	// TODO: public static AppCom appcom;
 	
 	public static void main(String[] args) {
 		JFrame f = new JFrame("Loading | StarshipTools.jar");
@@ -83,17 +81,17 @@ public class Main {
 		pba.setString("T0 set | Loading overlay");
 		pba.setValue(3);
 		ovr = new Overlay();
-		pba.setString("Overlay initialized | Loading Chat tools");
+		pba.setString("Overlay initialized | Loading Timer");
 		pba.setValue(4);
-		tools = new ChatTools("mhJRzQsLZGg");
-		pba.setString("Chat tools initialized | Loading timer");
-		pba.setValue(5);
+		// TODO: tools = new ChatTools("mhJRzQsLZGg");
+		// TODO: pba.setString("Chat tools initialized | Loading timer");
+		// TODO: pba.setValue(5);
 		timer = new Timer();
 		pba.setString("Timer initialized | Loading OBS and AppCom");
 		pba.setValue(6);
 		questions = new ArrayList<>();
 		obs = new ObsComms();
-		appcom = new AppCom();
+		// TODO: appcom = new AppCom();
 		pba.setString("OBS and AppCom initialized | Constructing command window");
 		pba.setValue(7);
 		
@@ -114,11 +112,11 @@ public class Main {
 			JFrame frame = new JFrame("ChatPicker | StarshipTools.jar");
 			
 			JComboBox<String> comboBox = new JComboBox<>();
-			
-			for (int i = 1; i < tools.getMessages().size(); i++) {
-				int index = tools.getMessages().size() - i;
-				comboBox.addItem(tools.getMessages().get(index).getAuthorName() + " | " + tools.getMessages().get(index).getMessage());
-			}
+
+//			for (int i = 1; i < tools.getMessages().size(); i++) {
+//				int index = tools.getMessages().size() - i;
+//				comboBox.addItem(tools.getMessages().get(index).getAuthorName() + " | " + tools.getMessages().get(index).getMessage());
+//			}
 			
 			JButton done = new JButton("Submit");
 			done.addActionListener(e1 -> {
@@ -181,7 +179,7 @@ public class Main {
 		t0tweaks.add(t0set);
 		
 		JPanel act = new JPanel(new GridLayout(1, 2));
-		act.add(toolButton);
+//		act.add(toolButton);
 		act.add(simpleMode);
 		
 		JPanel fin = new JPanel(new GridLayout(6, 1));
