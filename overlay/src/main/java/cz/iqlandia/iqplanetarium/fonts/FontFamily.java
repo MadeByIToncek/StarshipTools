@@ -12,7 +12,8 @@
 package cz.iqlandia.iqplanetarium.fonts;
 
 public enum FontFamily {
-	STOLZL("https://github.com/MadeByIToncek/cdn.itoncek.cf/raw/main/fonts/Stolzl-", ".ttf", "stolzl");
+	STOLZL("https://github.com/MadeByIToncek/cdn.itoncek.cf/raw/main/fonts/Stolzl-", ".ttf", "stolzl"),
+	VCR("https://github.com/MadeByIToncek/cdn.itoncek.cf/raw/main/fonts/VCR_OSD_MONO-", ".ttf", "vcr_osd_mono");
 	
 	private final String prefix;
 	private final String suffix;

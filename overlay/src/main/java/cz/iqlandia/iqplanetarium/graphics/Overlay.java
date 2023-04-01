@@ -81,7 +81,7 @@ public class Overlay extends JPanel {
 		int width;
 		//T0
 		g.setColor(Color.WHITE);
-		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(47F));
+		g.setFont(Main.font(FontFamily.VCR, FontVariant.REGULAR).deriveFont(47F).deriveFont(Font.BOLD));
 		fm = getFontMetrics(g.getFont());
 		String tim = locktime;
 		if(state == State.GO || state == State.NOMINAL) {
@@ -98,7 +98,7 @@ public class Overlay extends JPanel {
 		
 		//Time
 		
-		g.setFont(Main.font(FontFamily.STOLZL, FontVariant.BOLD).deriveFont(40F));
+		g.setFont(Main.font(FontFamily.VCR, FontVariant.REGULAR).deriveFont(40F).deriveFont(Font.BOLD));
 		fm = getFontMetrics(g.getFont());
 		LocalTime time = LocalTime.now();
 		LocalTime bc = LocalTime.now().minusHours(5);
@@ -108,10 +108,10 @@ public class Overlay extends JPanel {
 		
 		// --> DRAWING TIME BOX HERE <--
 		g.setColor(iqPrimary);
-		g.fillRect(1851 - width, 78, width + 10, 58);
+		g.fillRect(1846 - width, 78, width + 15, 58);
 		g.setColor(Color.WHITE);
 		
-		g.drawString(times, 1860 - width, 123);
+		g.drawString(times, 1851 - width, 123);
 		
 		
 		if(!simple) {
