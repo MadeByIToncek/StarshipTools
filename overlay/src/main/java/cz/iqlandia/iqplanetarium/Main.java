@@ -305,7 +305,7 @@ public class Main {
 			} catch (IOException | FontFormatException e) {
 				JDialog dialog = new JDialog();
 				dialog.add(new JLabel(e.getLocalizedMessage()));
-				return null;
+				return Font.getFont("Arial");
 			}
 		} else {
 			try {
@@ -313,7 +313,7 @@ public class Main {
 			} catch (FontFormatException | IOException e) {
 				JDialog dialog = new JDialog();
 				dialog.add(new JLabel(e.getLocalizedMessage()));
-				return null;
+				return Font.getFont("Arial");
 			}
 		}
 	}
