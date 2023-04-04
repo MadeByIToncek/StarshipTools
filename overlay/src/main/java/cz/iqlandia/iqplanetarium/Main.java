@@ -93,6 +93,7 @@ public class Main {
 		panels.put(new PanelMeta(800, 200, 5, true, "Times Overlay | StarshipTools.jar"), new TimesOverlay());
 		panels.put(new PanelMeta(1920, 200, 25, true, "Bar Overlay | StarshipTools.jar"), new BarOverlay());
 		panels.put(new PanelMeta(465, 260, 1, false, "Camera Overlay | StarshipTools.jar"), new CameraOverlay());
+		panels.put(new PanelMeta(1920, 200, 1, false, "Static Overlay | StarshipTools.jar"), new StaticOverlay());
 		pba.setString("Overlay initialized | Loading Config");
 		pba.setValue(4);
 		// TODO: tools = new ChatTools("mhJRzQsLZGg");
@@ -299,6 +300,8 @@ public class Main {
 		JSONObject cfg = new JSONObject();
 		cfg.put("show-time", false);
 		cfg.put("title", "Starship OFT - 1");
+		cfg.put("prestream", "Přenos začne v T- 00:30:00");
+		cfg.put("pause", "Přenos pozastaven, hned budeme zpět");
 		
 		try (FileWriter fw = new FileWriter("./config/cfg.json")) {
 			fw.write(cfg.toString(4));
