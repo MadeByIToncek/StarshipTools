@@ -14,7 +14,7 @@
 
     <groupId>cz.iqlandia.iqplanetarium</groupId>
     <artifactId>StarshipTools</artifactId>
-    <version>23w14a</version>
+    <version>2.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
