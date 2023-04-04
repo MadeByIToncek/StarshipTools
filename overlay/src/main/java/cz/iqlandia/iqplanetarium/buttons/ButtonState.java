@@ -15,10 +15,14 @@ import cz.iqlandia.iqplanetarium.*;
 import cz.iqlandia.iqplanetarium.graphics.*;
 import cz.iqlandia.iqplanetarium.utils.*;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.*;
+import java.util.Timer;
 import java.util.*;
+
+import static cz.iqlandia.iqplanetarium.Main.*;
 
 public
 class ButtonState implements ActionListener {
@@ -66,13 +70,11 @@ class ButtonState implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		State prev = Main.ovr.state;
+		State prev = state;
 		State state = State.valueOf(e.getActionCommand());
-		Main.ovr.state = state;
-		if(state != State.NOMINAL) {
-			Main.ovr.locktime = Overlay.getT0();
-		} else if(state != State.GO) {
-			Main.ovr.locktime = Overlay.getT0();
+		Main.state = state;
+		if(state != State.NOMINAL || state != State.GO) {
+			locktime = TimesOverlay.getT0();
 		}
 		float max = 25;
 		Timer timer = new Timer();
@@ -82,7 +84,10 @@ class ButtonState implements ActionListener {
 			@Override
 			public void run() {
 				if(i <= max) {
-					Main.ovr.iqPrimary = blend(state.getColor(), prev.getColor(), i / max);
+					iqPrimary = blend(state.getColor(), prev.getColor(), i / max);
+					for (JFrame frame : frames) {
+						frame.repaint();
+					}
 				} else {
 					timer.cancel();
 					timer.purge();

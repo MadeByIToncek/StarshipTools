@@ -33,26 +33,32 @@ import java.util.*;
 import static java.lang.Thread.*;
 
 public class Main {
-	public static JFrame overlay;
 	public static JFrame command;
+	public static String locktime = "";
+	public static Color iqPrimary = new Color(0, 163, 224);
+	public static State state = State.NOMINAL;
 	public static boolean post = false;
 	public static boolean simple = true;
+	public static int maxlenght = 1728;
 	public static List<CountdownEvent> prelaunch;
 	public static List<CountdownEvent> postlaunch;
 	public static int index = 0;
 	public static Instant t0;
 	public static JProgressBar pb;
-	public static Overlay ovr;
+	public static HashMap<PanelMeta, JPanel> panels;
+	public static List<JFrame> frames;
 	// TODO: public static ChatTools tools;
 	// TODO: public static int chatIndex = -1;
 	public static Timer timer;
 	public static List<String> questions;
 	public static ObsComms obs;
+	public static AnimatedInteger bar = new AnimatedInteger(0, 5F);
 	public static JSONObject cfg;
 	// TODO: public static AppCom appcom;
 	
 	public static void main(String[] args) throws ConfigurationException, IOException {
 		JFrame f = new JFrame("Loading | StarshipTools.jar");
+		f.setLocation(-1800, 20);
 		JProgressBar pba = new JProgressBar(JProgressBar.HORIZONTAL);
 		pba.setValue(0);
 		pba.setMaximum(11);
@@ -64,14 +70,15 @@ public class Main {
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent) {
 				f.setVisible(false);
+				shutdown();
 				System.exit(0);
 			}
 		});
 		
+		
 		f.setVisible(true);
 		
 		//Assigning static variables
-		overlay = new JFrame("Starship Overlay | StarshipTools.jar");
 		command = new JFrame("Command | StarshipTools.jar");
 		pba.setString("Windows initialized | Loading events");
 		pba.setValue(1);
@@ -82,7 +89,11 @@ public class Main {
 		t0 = LocalDateTime.of(2023, 3, 12, 14, 30, 0).toInstant(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.of(2023, 3, 12, 14, 30, 0)));
 		pba.setString("T0 set | Loading overlay");
 		pba.setValue(3);
-		ovr = new Overlay();
+		panels = new HashMap<>();
+		panels.put(new PanelMeta(800, 200, 5, true, "Times Overlay | StarshipTools.jar"), new TimesOverlay());
+		panels.put(new PanelMeta(1920, 200, 25, true, "Bar Overlay | StarshipTools.jar"), new BarOverlay());
+		panels.put(new PanelMeta(465, 260, 1, false, "Camera Overlay | StarshipTools.jar"), new CameraOverlay());
+		panels.put(new PanelMeta(1920, 200, 1, false, "Static Overlay | StarshipTools.jar"), new StaticOverlay());
 		pba.setString("Overlay initialized | Loading Config");
 		pba.setValue(4);
 		// TODO: tools = new ChatTools("mhJRzQsLZGg");
@@ -203,47 +214,57 @@ public class Main {
 		command.setMaximumSize(dim);
 		command.setMaximumSize(dim);
 		if(Objects.equals(System.getenv("DEV"), "true")) {
-			command.setLocation(-1800, 142);
+			command.setLocation(-1800, 177);
 		}
 		command.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent) {
-				overlay.setVisible(false);
-				command.setVisible(false);
-				System.exit(0);
+				shutdown();
 			}
 		});
+		command.setVisible(true);
 		
 		pba.setString("Command window set up | Constructing overlay window");
 		pba.setValue(8);
 		
-		// ----------------------------------------- OVERLAY WINDOW LOADING -------------------------------------------------
-		
-		overlay.add(ovr);
-		Dimension fullhd = new Dimension(1920, 1080 + 37);
-		overlay.setSize(fullhd);
-		overlay.setMinimumSize(fullhd);
-		overlay.setMaximumSize(fullhd);
-		overlay.setResizable(false);
-		if(Objects.equals(System.getenv("DEV"), "true")) {
-			overlay.setLocation(-3830, 50);
-		}
-		overlay.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent windowEvent) {
-				overlay.setVisible(false);
-				command.setVisible(false);
-				System.exit(0);
+		// ----------------------------------------- OVERLAY WINDOWS LOADING -------------------------------------------------
+		frames = new ArrayList<>();
+		int yoff = 20;
+		for (Map.Entry<PanelMeta, JPanel> panel : panels.entrySet()) {
+			JFrame overlay = new JFrame(panel.getKey().name());
+			overlay.add(panel.getValue());
+			Dimension fullhd = new Dimension(panel.getKey().x(), panel.getKey().y() + 37);
+			overlay.setSize(fullhd);
+			overlay.setLocation(20, yoff);
+			overlay.setMinimumSize(fullhd);
+			overlay.setMaximumSize(fullhd);
+			overlay.setResizable(false);
+//			if(Objects.equals(System.getenv("DEV"), "true")) {
+//				overlay.setLocation(-3830, 50);
+//			}
+			overlay.addWindowListener(new WindowAdapter() {
+				public void windowClosing(WindowEvent windowEvent) {
+					shutdown();
+				}
+			});
+			frames.add(overlay);
+			overlay.setVisible(true);
+			yoff = yoff + panel.getKey().y() + 57;
+			if(panel.getKey().refresh()) {
+				timer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						overlay.repaint();
+					}
+				}, 1000 / panel.getKey().fps(), 1000 / panel.getKey().fps());
+				
 			}
-		});
+		}
+		
 		pba.setString("Overlay window set up | Preparing timer");
 		pba.setValue(9);
 		
 		// ----------------------------------------- THREAD SETUP ----------------------------------------------------------
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				overlay.repaint();
-			}
-		}, 40, 40);
+		
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(timer::cancel));
 		pba.setString("Timer set up | Final tweaks");
@@ -252,13 +273,11 @@ public class Main {
 		CountdownEvent ev = getCurrent().get(0);
 		getCurrent().set(0, new CountdownEvent(ev.name(), ev.description(), LocalTime.now(), ev.x(), ev.ratio()));
 		pb.setValue(Main.index + 1);
-		ovr.bar.setTarget(getCurrent().get(index).ratio());
+		bar.setTarget(getCurrent().get(index).ratio());
 		pba.setString("Ready!");
 		pba.setValue(11);
 		// ----------------------------------------- SHOWING WINDOWS -----------------------------------------------------
 		f.setVisible(false);
-		overlay.setVisible(true);
-		command.setVisible(true);
 	}
 	
 	private static JSONObject loadCFG() {
@@ -280,6 +299,9 @@ public class Main {
 		
 		JSONObject cfg = new JSONObject();
 		cfg.put("show-time", false);
+		cfg.put("title", "Starship OFT - 1");
+		cfg.put("prestream", "Přenos začne v T- 00:30:00");
+		cfg.put("pause", "Přenos pozastaven, hned budeme zpět");
 		
 		try (FileWriter fw = new FileWriter("./config/cfg.json")) {
 			fw.write(cfg.toString(4));
@@ -411,6 +433,15 @@ public class Main {
 		
 		
 		return temp;
+	}
+	
+	public static void shutdown() {
+		for (JFrame frame : frames) {
+			frame.setVisible(false);
+		}
+		command.setVisible(false);
+		obs.disconnect();
+		System.exit(0);
 	}
 	
 }

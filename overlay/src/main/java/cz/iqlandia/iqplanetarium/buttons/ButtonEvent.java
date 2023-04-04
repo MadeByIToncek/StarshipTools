@@ -38,7 +38,7 @@ public class ButtonEvent implements ActionListener {
 			}
 		}
 		pb.setValue(index + 1);
-		ovr.bar.setTarget(Main.getCurrent().get(index).ratio());
+		bar.setTarget(Main.getCurrent().get(index).ratio());
 		CountdownEvent ce = Main.getCurrent().get(index);
 		if(ce.time() == null) {
 			getCurrent().set(index, new CountdownEvent(ce.name(), ce.description(), LocalTime.now(), ce.x(), ce.ratio()));
@@ -50,10 +50,10 @@ public class ButtonEvent implements ActionListener {
 		post = !post;
 		if(post) {
 			index = 0;
-			ovr.bar.setCurrent(0);
+			bar.setCurrent(0);
 		} else {
 			index = getCurrent().size() - 1;
-			ovr.bar.setCurrent(1);
+			bar.setCurrent(1);
 		}
 		CountdownEvent tmp = getCurrent().get(0);
 		getCurrent().set(0, new CountdownEvent(tmp.name(), tmp.description(), LocalTime.now(), tmp.x(), tmp.ratio()));
