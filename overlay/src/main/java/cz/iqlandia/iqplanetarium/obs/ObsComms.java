@@ -11,8 +11,8 @@
 
 package cz.iqlandia.iqplanetarium.obs;
 
+import com.google.gson.*;
 import io.obswebsocket.community.client.*;
-import io.obswebsocket.community.client.message.response.sceneitems.*;
 import org.json.*;
 
 import javax.swing.*;
@@ -31,8 +31,8 @@ public class ObsComms {
 		controller = OBSRemoteController.builder()
 				// set options, register for events, etc.
 				// continue reading for more information
-				.host("localhost")
-				.port(4444)
+				.host(address)
+				.port(port)
 				.lifecycle()
 				.onReady(() -> {
 					ready = true;
@@ -79,18 +79,48 @@ public class ObsComms {
 		port = object.getInt("port");
 	}
 	
-	public void hide() {
+	public void hide(String item) {
 		if(ready) {
-			GetSceneItemIdResponse sceneItemId = controller.getSceneItemId("Starship", "StarshipTools", 0, 1000);
-			controller.setSceneItemEnabled("Starship", sceneItemId.getSceneItemId(), false, 1000);
+			controller.getSceneItemId("Starship", item, 0, (id) -> controller.setSceneItemEnabled("Starship", id.getSceneItemId(), false, (c) -> {
+				System.out.println("Swiped");
+			}));
 		}
 	}
 	
-	public void show() {
+	public void show(String item) {
 		if(ready) {
-			GetSceneItemIdResponse sceneItemId = controller.getSceneItemId("Starship", "StarshipTools", 0, 1000);
-			controller.setSceneItemEnabled("Starship", sceneItemId.getSceneItemId(), true, 1000);
+			controller.getSceneItemId("Starship", item, 0, (id) -> controller.setSceneItemEnabled("Starship", id.getSceneItemId(), true, (c) -> {
+				System.out.println("Swiped");
+			}));
 		}
+	}
+	
+	public String address(String address) {
+		try {
+			String cmd = "youtube-dl --get-url -f b " + address;
+			Process exec = Runtime.getRuntime().exec(cmd);
+			Scanner sc = new Scanner(exec.getInputStream());
+			Scanner se = new Scanner(exec.getErrorStream());
+			StringBuilder sb = new StringBuilder();
+			StringBuilder sbe = new StringBuilder();
+			while (sc.hasNextLine()) {
+				sb.append(sc.nextLine());
+			}
+			while (se.hasNextLine()) {
+				sbe.append(se.nextLine());
+			}
+			System.out.println(sb);
+			System.out.println(se);
+			return sb.toString();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public void updateStream(String address) {
+		JSONObject obj = new JSONObject().put("playlist", new JSONArray().put(new JSONObject().put("value", address(address)).put("id", 0)));
+		JsonObject o = (JsonObject) JsonParser.parseString(obj.toString());
+		controller.setInputSettings("stream", o, false, 1000);
 	}
 	
 	public void disconnect() {
