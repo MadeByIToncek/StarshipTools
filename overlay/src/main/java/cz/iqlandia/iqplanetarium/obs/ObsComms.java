@@ -92,4 +92,8 @@ public class ObsComms {
 			controller.setSceneItemEnabled("Starship", sceneItemId.getSceneItemId(), true, 1000);
 		}
 	}
+	
+	public void disconnect() {
+		controller.disconnect();
+	}
 }
