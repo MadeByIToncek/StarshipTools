@@ -24,7 +24,7 @@
     <parent>
         <artifactId>StarshipTools</artifactId>
         <groupId>cz.iqlandia.iqplanetarium</groupId>
-        <version>2.0</version>
+        <version>23w15a</version>
     </parent>
 
     <build>

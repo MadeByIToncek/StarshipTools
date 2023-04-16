@@ -15,7 +15,6 @@ import cz.iqlandia.iqplanetarium.buttons.*;
 import cz.iqlandia.iqplanetarium.fonts.*;
 import cz.iqlandia.iqplanetarium.graphics.*;
 import cz.iqlandia.iqplanetarium.obs.*;
-import cz.iqlandia.iqplanetarium.utils.State;
 import cz.iqlandia.iqplanetarium.utils.*;
 import org.apache.commons.configuration2.ex.*;
 import org.json.*;
@@ -30,8 +29,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.*;
 
-import static java.lang.Thread.*;
-
 public class Main {
 	public static JFrame command;
 	public static String locktime = "";
@@ -39,6 +36,7 @@ public class Main {
 	public static State state = State.NOMINAL;
 	public static boolean post = false;
 	public static boolean simple = true;
+	public static boolean cam = true;
 	public static int maxlenght = 1728;
 	public static List<CountdownEvent> prelaunch;
 	public static List<CountdownEvent> postlaunch;
@@ -81,36 +79,37 @@ public class Main {
 		//Assigning static variables
 		command = new JFrame("Command | StarshipTools.jar");
 		pba.setString("Windows initialized | Loading events");
-		pba.setValue(1);
+		pba.setValue(pba.getValue() + 1);
 		prelaunch = calcEvents(false);
 		postlaunch = calcEvents(true);
-		pba.setString("Events initialized | Loading T0");
-		pba.setValue(2);
-		t0 = LocalDateTime.of(2023, 3, 12, 14, 30, 0).toInstant(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.of(2023, 3, 12, 14, 30, 0)));
-		pba.setString("T0 set | Loading overlay");
-		pba.setValue(3);
-		panels = new HashMap<>();
-		panels.put(new PanelMeta(800, 200, 5, true, "Times Overlay | StarshipTools.jar"), new TimesOverlay());
-		panels.put(new PanelMeta(1920, 200, 25, true, "Bar Overlay | StarshipTools.jar"), new BarOverlay());
-		panels.put(new PanelMeta(465, 260, 1, false, "Camera Overlay | StarshipTools.jar"), new CameraOverlay());
-		panels.put(new PanelMeta(1920, 200, 1, false, "Static Overlay | StarshipTools.jar"), new StaticOverlay());
-		pba.setString("Overlay initialized | Loading Config");
-		pba.setValue(4);
+		pba.setString("Events initialized | Loading cfg");
+		pba.setValue(pba.getValue() + 1);
 		// TODO: tools = new ChatTools("mhJRzQsLZGg");
 		if(!new File("./config/cfg.json").exists()) {
 			createCFG();
 		}
 		cfg = loadCFG();
-		pba.setString("Config initialized | Loading timer");
-		pba.setValue(5);
+		pba.setString("Events initialized | Loading T0");
+		pba.setValue(pba.getValue() + 1);
+		JSONObject time = cfg.getJSONObject("t0");
+		t0 = LocalDateTime.of(time.getInt("year"), time.getInt("month"), time.getInt("day"), time.getInt("hour"), time.getInt("minute"), time.getInt("second")).toInstant(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.of(2023, 3, 12, 14, 30, 0)));
+		pba.setString("T0 set | Loading overlay");
+		pba.setValue(pba.getValue() + 1);
+		panels = new HashMap<>();
+		panels.put(new PanelMeta(800, 200, 5, true, "Times Overlay | StarshipTools.jar"), new TimesOverlay());
+		panels.put(new PanelMeta(1920, 200, 25, true, "Bar Overlay | StarshipTools.jar"), new BarOverlay());
+		panels.put(new PanelMeta(465, 260, 1, false, "Camera Overlay | StarshipTools.jar"), new CameraOverlay());
+		panels.put(new PanelMeta(1920, 200, 1, false, "Static Overlay | StarshipTools.jar"), new StaticOverlay());
+		pba.setString("Overlay initialized | Loading timer");
+		pba.setValue(pba.getValue() + 1);
 		timer = new Timer();
 		pba.setString("Timer initialized | Loading OBS and AppCom");
-		pba.setValue(6);
+		pba.setValue(pba.getValue() + 1);
 		questions = new ArrayList<>();
 		obs = new ObsComms();
 		// TODO: appcom = new AppCom();
 		pba.setString("OBS and AppCom initialized | Constructing command window");
-		pba.setValue(7);
+		pba.setValue(pba.getValue() + 1);
 		
 		// ----------------------------------------- COMMAND WINDOW LOADING -------------------------------------------------
 		JButton next = new JButton();
@@ -150,17 +149,34 @@ public class Main {
 		
 		JButton simpleMode = new JButton("Switch modes");
 		simpleMode.addActionListener((a) -> new Thread(() -> {
-			try {
-				obs.hide();
-				sleep(1100);
-				simple = !simple;
-				sleep(1100);
-				obs.show();
-			} catch (InterruptedException e) {
-				JDialog dialog = new JDialog();
-				dialog.add(new JLabel(e.getLocalizedMessage()));
-				e.printStackTrace();
+			simple = !simple;
+			if(simple) {
+				obs.show("Bar");
+			} else {
+				obs.hide("Bar");
 			}
+		}).start());
+		
+		JButton camera = new JButton("Cam/Mic toggle");
+		camera.addActionListener((a) -> new Thread(() -> {
+			cam = !cam;
+			if(cam) {
+				obs.show("WideCam");
+				obs.show("DialogCam");
+				obs.show("CameraBox");
+				obs.show("mic");
+			} else {
+				obs.hide("WideCam");
+				obs.hide("DialogCam");
+				obs.hide("CameraBox");
+				obs.hide("mic");
+			}
+		}).start());
+		
+		JButton updateLink = new JButton("Update stream");
+		updateLink.addActionListener((a) -> new Thread(() -> {
+			String path = JOptionPane.showInputDialog("Insert stream url on YouTube:");
+			obs.updateStream(path);
 		}).start());
 
 
@@ -198,6 +214,8 @@ public class Main {
 		JPanel act = new JPanel(new GridLayout(1, 2));
 //		act.add(toolButton);
 		act.add(simpleMode);
+		act.add(updateLink);
+		act.add(camera);
 		
 		JPanel fin = new JPanel(new GridLayout(6, 1));
 		fin.add(new Title());
@@ -302,6 +320,14 @@ public class Main {
 		cfg.put("title", "Starship OFT - 1");
 		cfg.put("prestream", "Přenos začne v T- 00:30:00");
 		cfg.put("pause", "Přenos pozastaven, hned budeme zpět");
+		JSONObject t0 = new JSONObject();
+		t0.put("year", 2023);
+		t0.put("month", 4);
+		t0.put("day", 17);
+		t0.put("hour", 14);
+		t0.put("minute", 0);
+		t0.put("second", 0);
+		cfg.put("t0", t0);
 		
 		try (FileWriter fw = new FileWriter("./config/cfg.json")) {
 			fw.write(cfg.toString(4));
