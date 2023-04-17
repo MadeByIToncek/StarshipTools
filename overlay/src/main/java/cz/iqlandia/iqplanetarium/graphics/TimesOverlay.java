@@ -65,7 +65,7 @@ public class TimesOverlay extends JPanel {
 		g.setFont(Main.font(FontFamily.VCR, FontVariant.REGULAR).deriveFont(40F).deriveFont(Font.BOLD));
 		fm = getFontMetrics(g.getFont());
 		LocalTime time = LocalTime.now();
-		LocalTime bc = LocalTime.now().minusHours(5);
+		LocalTime bc = LocalTime.now().minusHours(7);
 		
 		String times = String.format("%02d:%02d:%02d TX // %02d:%02d:%02d CZ", bc.getHour(), bc.getMinute(), bc.getSecond(), time.getHour(), time.getMinute(), time.getSecond());
 		width = fm.stringWidth(times);
