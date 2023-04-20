@@ -161,13 +161,13 @@ public class Main {
 		camera.addActionListener((a) -> new Thread(() -> {
 			cam = !cam;
 			if(cam) {
-				obs.show("WideCam");
-				obs.show("DialogCam");
+				obs.show("SelfieCam");
+				obs.show("OutsideCam");
 				obs.show("CameraBox");
 				obs.show("mic");
 			} else {
-				obs.hide("WideCam");
-				obs.hide("DialogCam");
+				obs.hide("SelfieCam");
+				obs.hide("OutsideCam");
 				obs.hide("CameraBox");
 				obs.hide("mic");
 			}
@@ -252,7 +252,7 @@ public class Main {
 			overlay.add(panel.getValue());
 			Dimension fullhd = new Dimension(panel.getKey().x(), panel.getKey().y() + 37);
 			overlay.setSize(fullhd);
-			overlay.setLocation(20, yoff);
+			overlay.setLocation(20, 20);
 			overlay.setMinimumSize(fullhd);
 			overlay.setMaximumSize(fullhd);
 			overlay.setResizable(false);

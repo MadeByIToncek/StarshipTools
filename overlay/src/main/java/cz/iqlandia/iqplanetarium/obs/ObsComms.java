@@ -81,17 +81,21 @@ public class ObsComms {
 	
 	public void hide(String item) {
 		if(ready) {
-			controller.getSceneItemId("Starship", item, 0, (id) -> controller.setSceneItemEnabled("Starship", id.getSceneItemId(), false, (c) -> {
-				System.out.println("Swiped");
-			}));
+			for (String s : Arrays.asList("Starship EverydayAstronaut", "Starship")) {
+				controller.getSceneItemId(s, item, 0, (id) -> controller.setSceneItemEnabled(s, id.getSceneItemId(), false, (c) -> {
+					System.out.println("Swiped");
+				}));
+			}
 		}
 	}
 	
 	public void show(String item) {
 		if(ready) {
-			controller.getSceneItemId("Starship", item, 0, (id) -> controller.setSceneItemEnabled("Starship", id.getSceneItemId(), true, (c) -> {
-				System.out.println("Swiped");
-			}));
+			for (String s : Arrays.asList("Starship EverydayAstronaut", "Starship")) {
+				controller.getSceneItemId(s, item, 0, (id) -> controller.setSceneItemEnabled(s, id.getSceneItemId(), true, (c) -> {
+					System.out.println("Swiped");
+				}));
+			}
 		}
 	}
 	
