@@ -23,7 +23,7 @@
 
     <parent>
         <artifactId>StarshipTools</artifactId>
-        <version>23w15a</version>
+        <version>23w15c</version>
         <groupId>cz.iqlandia.iqplanetarium</groupId>
     </parent>
 
