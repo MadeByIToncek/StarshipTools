@@ -17,6 +17,7 @@ import cz.iqlandia.iqplanetarium.graphics.*;
 import cz.iqlandia.iqplanetarium.obs.*;
 import cz.iqlandia.iqplanetarium.utils.*;
 import org.apache.commons.configuration2.ex.*;
+import org.jetbrains.annotations.NotNull;
 import org.json.*;
 
 import javax.swing.*;
@@ -43,7 +44,7 @@ public class Main {
 	public static int index = 0;
 	public static Instant t0;
 	public static JProgressBar pb;
-	public static HashMap<PanelMeta, JPanel> panels;
+	public static TreeMap<PanelMeta, JPanel> panels;
 	public static List<JFrame> frames;
 	// TODO: public static ChatTools tools;
 	// TODO: public static int chatIndex = -1;
@@ -95,18 +96,18 @@ public class Main {
 		t0 = LocalDateTime.of(time.getInt("year"), time.getInt("month"), time.getInt("day"), time.getInt("hour"), time.getInt("minute"), time.getInt("second")).toInstant(ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.of(2023, 3, 12, 14, 30, 0)));
 		pba.setString("T0 set | Loading overlay");
 		pba.setValue(pba.getValue() + 1);
-		panels = new HashMap<>();
-		panels.put(new PanelMeta(800, 200, 5, true, "Times Overlay | StarshipTools.jar"), new TimesOverlay());
-		panels.put(new PanelMeta(1920, 200, 25, true, "Bar Overlay | StarshipTools.jar"), new BarOverlay());
-		panels.put(new PanelMeta(465, 260, 1, false, "Camera Overlay | StarshipTools.jar"), new CameraOverlay());
-		panels.put(new PanelMeta(1920, 200, 1, false, "Static Overlay | StarshipTools.jar"), new StaticOverlay());
+		panels = new TreeMap<>();
+		panels.put(new PanelMeta(800, 200, 5, true, "Times Overlay | StarshipTools.jar",1), new TimesOverlay());
+//		panels.put(new PanelMeta(1920, 200, 25, true, "Bar Overlay | StarshipTools.jar",2), new BarOverlay());
+		panels.put(new PanelMeta(465, 260, 1, false, "Camera Overlay | StarshipTools.jar",0), new CameraOverlay());
+		//panels.put(new PanelMeta(1920, 200, 1, false, "Static Overlay | StarshipTools.jar",3), new StaticOverlay());
 		pba.setString("Overlay initialized | Loading timer");
 		pba.setValue(pba.getValue() + 1);
 		timer = new Timer();
 		pba.setString("Timer initialized | Loading OBS and AppCom");
 		pba.setValue(pba.getValue() + 1);
-		questions = new ArrayList<>();
-		obs = new ObsComms();
+		// TODO: questions = new ArrayList<>();
+		// TODO: obs = new ObsComms();
 		// TODO: appcom = new AppCom();
 		pba.setString("OBS and AppCom initialized | Constructing command window");
 		pba.setValue(pba.getValue() + 1);
@@ -151,9 +152,9 @@ public class Main {
 		simpleMode.addActionListener((a) -> new Thread(() -> {
 			simple = !simple;
 			if(simple) {
-				obs.show("Bar");
+				//obs.show("Bar");
 			} else {
-				obs.hide("Bar");
+				//obs.hide("Bar");
 			}
 		}).start());
 		
@@ -176,9 +177,8 @@ public class Main {
 		JButton updateLink = new JButton("Update stream");
 		updateLink.addActionListener((a) -> new Thread(() -> {
 			String path = JOptionPane.showInputDialog("Insert stream url on YouTube:");
-			obs.updateStream(path);
+			//obs.updateStream(path);
 		}).start());
-
 
 //		JSlider slider = new JSlider(JSlider.HORIZONTAL);
 //		slider.setMaximum(100);
@@ -239,20 +239,21 @@ public class Main {
 				shutdown();
 			}
 		});
-		command.setVisible(true);
+
 		
 		pba.setString("Command window set up | Constructing overlay window");
 		pba.setValue(8);
 		
 		// ----------------------------------------- OVERLAY WINDOWS LOADING -------------------------------------------------
 		frames = new ArrayList<>();
-		int yoff = 20;
+		int yoff = 20+command.getHeight();
+		command.setLocation(20, 20);
 		for (Map.Entry<PanelMeta, JPanel> panel : panels.entrySet()) {
 			JFrame overlay = new JFrame(panel.getKey().name());
 			overlay.add(panel.getValue());
 			Dimension fullhd = new Dimension(panel.getKey().x(), panel.getKey().y() + 37);
 			overlay.setSize(fullhd);
-			overlay.setLocation(20, 20);
+			overlay.setLocation(20, yoff);
 			overlay.setMinimumSize(fullhd);
 			overlay.setMaximumSize(fullhd);
 			overlay.setResizable(false);
@@ -266,7 +267,7 @@ public class Main {
 			});
 			frames.add(overlay);
 			overlay.setVisible(true);
-			yoff = yoff + panel.getKey().y() + 57;
+			yoff = yoff + panel.getKey().y() + 40;
 			if(panel.getKey().refresh()) {
 				timer.schedule(new TimerTask() {
 					@Override
@@ -277,7 +278,8 @@ public class Main {
 				
 			}
 		}
-		
+		command.setVisible(true);
+
 		pba.setString("Overlay window set up | Preparing timer");
 		pba.setValue(9);
 		
@@ -322,8 +324,8 @@ public class Main {
 		cfg.put("pause", "Přenos pozastaven, hned budeme zpět");
 		JSONObject t0 = new JSONObject();
 		t0.put("year", 2023);
-		t0.put("month", 4);
-		t0.put("day", 17);
+		t0.put("month", 11);
+		t0.put("day", 18);
 		t0.put("hour", 14);
 		t0.put("minute", 0);
 		t0.put("second", 0);
@@ -379,15 +381,8 @@ public class Main {
 		if(post) {
 			read = new File("./config/postlaunch.json");
 			if(!read.exists()) {
-				ArrayList<CountdownEvent> temp = new ArrayList<>();
-				temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 100, 0.03f));
-				temp.add(new CountdownEvent("Pitch over", "Raketa začne gravitační oblouk.", null, 300, 0.16f));
-				temp.add(new CountdownEvent("Max-Q", "Moment nejvyššího aerodynamického namáhání rakety.", null, 550, 0.29f));
-				temp.add(new CountdownEvent("MECO", "B7 vypne svých 33 raptor motorů", null, 700, 0.375f));
-				temp.add(new CountdownEvent("Rozdělení stupňů", "B7 zamíří zpět k pevnině, S24 pokračuje dále na orbitu.", null, 850, 0.51f));
-				temp.add(new CountdownEvent("RapVac start", "Motory S24 byly zažehnuty", null, 1200, 0.7f));
-				temp.add(new CountdownEvent("A co dál?", "A co dále? Nevíme :D", null, 1650, 0.94f));
-				
+				ArrayList<CountdownEvent> temp = getCountdownEvents();
+
 				if(!new File("./config/").exists()) {
 					new File("./config/").mkdirs();
 				}
@@ -411,15 +406,8 @@ public class Main {
 		} else {
 			read = new File("./config/prelaunch.json");
 			if(!read.exists()) {
-				ArrayList<CountdownEvent> temp = new ArrayList<>();
-				temp.add(new CountdownEvent("Cesta uzavřena", "Cesta TX4 je uzavřena před OFT-1", null, 95, 0.06f));
-				temp.add(new CountdownEvent("Rampa evakuována", "Veškerý personál opustil blízkost rakety", null, 400, 0.27f));
-				temp.add(new CountdownEvent("Rekondenzátor", "Reknodenzátor byl zapnut", null, 740, 0.43f));
-				temp.add(new CountdownEvent("Tankování", "Raketa se plní tekutým metanem a tekutým kyslíkem", null, 1060, 0.60f));
-				temp.add(new CountdownEvent("Chlazení motorů", "Raketa začne posílat do motorů kyslík aby ho připravila na chladné plyny.", null, 1300, 0.77f));
-				temp.add(new CountdownEvent("Zážeh!", "Motory byly zažehnuty", null, 1593, 0.89f));
-				temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 1717, 0.97f));
-				
+				ArrayList<CountdownEvent> temp = getEvents();
+
 				if(!new File("./config/").exists()) {
 					new File("./config/").mkdirs();
 				}
@@ -460,13 +448,39 @@ public class Main {
 		
 		return temp;
 	}
-	
+
+	@NotNull
+	private static ArrayList<CountdownEvent> getEvents() {
+		ArrayList<CountdownEvent> temp = new ArrayList<>();
+		temp.add(new CountdownEvent("Cesta uzavřena", "Cesta TX4 je uzavřena před OFT-1", null, 95, 0.06f));
+		temp.add(new CountdownEvent("Rampa evakuována", "Veškerý personál opustil blízkost rakety", null, 400, 0.27f));
+		temp.add(new CountdownEvent("Rekondenzátor", "Reknodenzátor byl zapnut", null, 740, 0.43f));
+		temp.add(new CountdownEvent("Tankování", "Raketa se plní tekutým metanem a tekutým kyslíkem", null, 1060, 0.60f));
+		temp.add(new CountdownEvent("Chlazení motorů", "Raketa začne posílat do motorů kyslík aby ho připravila na chladné plyny.", null, 1300, 0.77f));
+		temp.add(new CountdownEvent("Zážeh!", "Motory byly zažehnuty", null, 1593, 0.89f));
+		temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 1717, 0.97f));
+		return temp;
+	}
+
+	@NotNull
+	private static ArrayList<CountdownEvent> getCountdownEvents() {
+		ArrayList<CountdownEvent> temp = new ArrayList<>();
+		temp.add(new CountdownEvent("START!", "Šťastnou cestu!", null, 100, 0.03f));
+		temp.add(new CountdownEvent("Pitch over", "Raketa začne gravitační oblouk.", null, 300, 0.16f));
+		temp.add(new CountdownEvent("Max-Q", "Moment nejvyššího aerodynamického namáhání rakety.", null, 550, 0.29f));
+		temp.add(new CountdownEvent("MECO", "B7 vypne svých 33 raptor motorů", null, 700, 0.375f));
+		temp.add(new CountdownEvent("Rozdělení stupňů", "B7 zamíří zpět k pevnině, S24 pokračuje dále na orbitu.", null, 850, 0.51f));
+		temp.add(new CountdownEvent("RapVac start", "Motory S24 byly zažehnuty", null, 1200, 0.7f));
+		temp.add(new CountdownEvent("A co dál?", "A co dále? Nevíme :D", null, 1650, 0.94f));
+		return temp;
+	}
+
 	public static void shutdown() {
 		for (JFrame frame : frames) {
 			frame.setVisible(false);
 		}
 		command.setVisible(false);
-		obs.disconnect();
+		//obs.disconnect();
 		System.exit(0);
 	}
 	

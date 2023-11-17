@@ -18,7 +18,7 @@ public enum State {
 	GO(new Color(4, 173, 4), 1764, 97, 1775),
 	HOLD(new Color(204, 109, 1), 1715, 146, 1722),
 	ABORT(new Color(175, 20, 0), 1676, 185, 1686),
-	RUD(new Color(92, 103, 107), 1748, 113, 1755);
+	RUD(new Color(69, 81, 84), 1748, 113, 1755);
 	
 	private final Color color;
 	private final int base;

@@ -11,5 +11,11 @@
 
 package cz.iqlandia.iqplanetarium.graphics;
 
-public record PanelMeta(int x, int y, int fps, boolean refresh, String name) {
+import org.jetbrains.annotations.NotNull;
+
+public record PanelMeta(int x, int y, int fps, boolean refresh, String name, int order) implements Comparable<PanelMeta>{
+    @Override
+    public int compareTo(@NotNull PanelMeta o) {
+        return this.order - o.order;
+    }
 }
