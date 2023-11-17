@@ -23,7 +23,7 @@
 
     <parent>
         <artifactId>StarshipTools</artifactId>
-        <version>23w15c</version>
+        <version>23w46a</version>
         <groupId>cz.iqlandia.iqplanetarium</groupId>
     </parent>
 
@@ -69,7 +69,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
